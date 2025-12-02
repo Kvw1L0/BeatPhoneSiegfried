@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veltis Leaderboard</title>
+<style>
+  :root {
+    --dark-bg: #1A1A2E;
+    --neon-blue: #00A1E0;
+    --neon-pink: #FF00FF;
+    --amber: #FFC107;
+    --text-glow: 0 0 10px rgba(255, 193, 7, 0.5);
+  }
+
+  body {
+    background-color: var(--dark-bg);
+    background-image: url("fondo.jpg"); /* Misma imagen que el juego */
+    background-size: cover;
+    background-position: center;
+    color: white;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Capa oscura para leer mejor */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 26, 46, 0.85);
+    z-index: -1;
+  }
+
+  h1 {
+    font-size: 4em;
+    margin: 30px 0 20px 0;
+    text-transform: uppercase;
+    color: var(--neon-blue);
+    text-shadow: 0 0 20px var(--neon-blue);
+    font-style: italic;
+    letter-spacing: 2px;
+  }
+
+  .container {
+    width: 80%;
+    max-width: 1000px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--neon-pink);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.2);
+    backdrop-filter: blur(5px);
+  }
+
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    font-size: 1.5em;
+    font-weight: bold;
+    border-bottom: 2px solid var(--neon-blue);
+    color: var(--neon-blue);
+    text-transform: uppercase;
+  }
+
+  #ranking-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .rank-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    font-size: 2em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .rank-item:nth-child(1) { color: var(--amber); font-weight: 900; font-size: 2.5em; text-shadow: var(--text-glow); }
+  .rank-item:nth-child(2) { color: silver; font-weight: 700; }
+  .rank-item:nth-child(3) { color: #cd7f32; font-weight: 700; }
+
+  .rank-pos { width: 50px; }
+  .rank-name { flex-grow: 1; text-align: left; padding-left: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+  .rank-time { font-family: monospace; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .loading {
+    text-align: center;
+    font-size: 1.5em;
+    padding: 40px;
+    color: rgba(255,255,255,0.5);
+  }
+
+</style>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<h1>🏆 Top Rockers ⚡</h1>
+
+<div class="container">
+  <div class="header-row">
+    <span>#</span>
+    <span>Rockstar</span>
+    <span>Tiempo (s)</span>
+  </div>
+  
+  <ul id="ranking-list">
+    <div class="loading">Cargando puntajes...</div>
+  </ul>
+</div>
+
+<script>
+  // 👇 PEGA AQUÍ LA MISMA URL QUE USASTE EN EL JUEGO 👇
+  const API_URL = "https://script.google.com/macros/s/AKfycbzVTnpCCoLs54928T3FCIFHJy7X-HMg_Lp2oew5NRcKKOBw57c-VgK6PVjufC65uAxt/exec"; 
+
+  async function updateRanking() {
+    try {
+      // Fetch a la misma URL (Apps Script detecta automáticamente si es GET o POST)
+      const response = await fetch(API_URL);
+      const data = await response.json();
+
+      const list = document.getElementById("ranking-list");
+      list.innerHTML = ""; // Limpiar lista actual
+
+      // Generar filas
+      data.forEach((player, index) => {
+        const li = document.createElement("li");
+        li.className = "rank-item";
+        
+        // Agregar icono de medalla a los top 3
+        let icon = "";
+        if (index === 0) icon = "👑 ";
+        else if (index === 1) icon = "🥈 ";
+        else if (index === 2) icon = "🥉 ";
+
+        li.innerHTML = `
+          <span class="rank-pos">${index + 1}</span>
+          <span class="rank-name">${icon}${player.name}</span>
+          <span class="rank-time">${player.time.toFixed(2)}s</span>
+        `;
+        list.appendChild(li);
+      });
+
+    } catch (error) {
+      console.error("Error cargando ranking:", error);
+    }
+  }
+
+  // Cargar al inicio
+  updateRanking();
+
+  // Actualizar automáticamente cada 2 segundos
+  setInterval(updateRanking, 2000);
+
+</script>
+
+</body>
+</html>
