@@ -3,34 +3,41 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>MAKO Shake it Challenge</title>
+<title>BATIPHONE </title>
 
 <style>
 :root {
   --sap-blue: #00A1E0;
   --neon-pink: #FF00FF;
+  --electric-blue: #03DAC6;
   --dark-background: #1A1A2E;
   --glow-color: #E0F7FA;
-  --amber: #00A1E0;
-  
+  --amber: #e2ab23;
+  --blue-fill: #0055FF; /* Nuevo color azul */
 }
 
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--dark-background);
+  background-image: url("fondo.jpg"); 
   color: white;
   text-align: center;
   overflow: hidden;
+    
+  /* FIX de alineación */
   display: flex;
   justify-content: center;
   align-items: center;
+
   height: 100vh;
   width: 100vw;
   padding: 0;
+  background-size: cover;
+  background-position: center;
 }
 
-/* --- OVERLAYS --- */
+/* --- OVERLAY --- */
 .overlay {
   position: fixed;
   inset: 0;
@@ -39,13 +46,19 @@ body {
   background: rgba(26, 26, 46, 0.95);
   backdrop-filter: blur(10px);
   z-index: 10000;
+
+  /* FIX de centrado real */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   padding: 0 !important;
+  opacity: 1;
+  pointer-events: auto;
   transition: opacity 0.5s ease-out;
 }
+
 
 .overlay.hidden {
   opacity: 0;
@@ -58,14 +71,16 @@ body {
   font-size: 20px;
   font-weight: bold;
   color: white;
-  background-color: var(--sap-blue);
+  background-color: var(--blue-fill); /* Botón azul también */
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 0 15px var(--sap-blue);
+  box-shadow: 0 0 15px var(--blue-fill);
 }
 
-#startButton:active { transform: scale(0.95); }
+#startButton:active {
+  transform: scale(0.95);
+}
 
 /* RESULTADOS */
 #overlay-results .results-wrapper {
@@ -73,100 +88,60 @@ body {
   opacity: 0;
   animation: result-appear 0.6s forwards;
 }
-@keyframes result-appear { to { transform: scale(1); opacity: 1; } }
+
+@keyframes result-appear {
+  to { transform: scale(1); opacity: 1; }
+}
 
 .final-message {
   font-size: 2.8em;
   font-weight: 700;
   margin-bottom: 10px;
-  color: var(--amber);
-  text-shadow: 0 0 8px var(--amber);
+  color: var(--electric-blue);
+  text-shadow: 0 0 8px var(--electric-blue), 0 0 15px white;
 }
 
 .final-time-value {
   font-size: 6em;
   font-weight: 900;
-  color: var(--amber);
+  color: var(--blue-fill);
   -webkit-text-stroke: 2px white;
-  text-shadow: 0 0 10px var(--sap-blue);
+  text-shadow: 0 0 10px var(--blue-fill), 0 0 30px var(--neon-pink);
 }
 
-/* --- ÁREA DE JUEGO --- */
 .game-area {
   display: none;
-  width: 100%;
-  height: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-/* ESTRUCTURA DE LA COCTELERA */
-.shaker-wrapper {
-  position: relative;
-  /* Dimensiones ajustadas para evitar recortes */
-  width: 320px;  
-  height: 560px; 
-  animation: breathing 3s infinite alternate ease-in-out;
-}
-
-/* DEFINICIÓN DE LA GEOMETRÍA SVG (ViewBox 0 0 400 700)
-   Esto asegura margen arriba y abajo para que no se corte la tapa ni la base.
-*/
-
-/* CAPA 1: MÁSCARA DEL LÍQUIDO */
-.liquid-container {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background-color: rgba(255,255,255,0.05);
-  
-  /* Máscara Sólida Unificada: Define el área rellenable */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 700'%3E%3C!-- Silueta completa unida --%3E%3Cpath d='M130 100 H270 C290 100 290 120 290 130 V180 H110 V130 C110 120 110 100 130 100 Z M 110 180 C 110 180 80 260 60 280 H 340 C 320 260 290 180 290 180 Z M 40 280 H 360 V 330 H 40 Z M 50 330 H 350 L 320 620 C 318 640 300 650 280 650 H 120 C 100 650 82 640 80 620 L 50 330 Z' fill='black'/%3E%3C/svg%3E");
-  
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 700'%3E%3C!-- Silueta completa unida --%3E%3Cpath d='M130 100 H270 C290 100 290 120 290 130 V180 H110 V130 C110 120 110 100 130 100 Z M 110 180 C 110 180 80 260 60 280 H 340 C 320 260 290 180 290 180 Z M 40 280 H 360 V 330 H 40 Z M 50 330 H 350 L 320 620 C 318 640 300 650 280 650 H 120 C 100 650 82 640 80 620 L 50 330 Z' fill='black'/%3E%3C/svg%3E");
-  
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-}
-
-/* El líquido en sí */
-.liquid {
-  width: 100%;
-  height: 0%; 
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(to top, #5e0d1b, var(--sap-blue), #ff4d4d);
-  transition: height 0.1s linear;
-}
-
-/* CAPA 2: EL CONTORNO (SVG VISIBLE) */
-.shaker-outline {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
+.music-note-container {
+  width: 328px;
+  margin-bottom: 20px;
   filter: drop-shadow(0 0 8px var(--glow-color));
+  animation: breathing 4s infinite alternate;
 }
 
 @keyframes breathing {
   from { transform: scale(1); }
-  to { transform: scale(1.02); }
+  to { transform: scale(1.03); }
+}
+
+footer {
+  opacity: 0.4;
+  font-size: 12px;
+  padding: 10px 0;
 }
 
 #confetti-canvas {
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  pointer-events: none; z-index: 10001;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10001;
 }
 </style>
 </head>
@@ -174,10 +149,12 @@ body {
 <body>
 
 <div id="overlay-start" class="overlay">
-  <h2>¡MAKO Shake it Challenge! ⚡</h2>
-  <p>Agita tu celular para llenar la coctelera.</p>
+  <h2>¡BATIPHONE Challenge! ⚡</h2>
+  <p>Agita tu celular lo más rápido que puedas para cargar la coctelera.</p>
+
   <input id="playerName" type="text" placeholder="Tu nombre" 
     style="margin-top:15px;padding:12px;width:80%;font-size:18px;border-radius:8px;border:none;">
+
   <button id="startButton">¡Comenzar!</button>
 </div>
 
@@ -191,141 +168,32 @@ body {
 <canvas id="confetti-canvas"></canvas>
 
 <div id="gameArea" class="game-area">
-  
-  <div class="shaker-wrapper">
-    
-    <div class="liquid-container">
-      <div id="liquid" class="liquid"></div>
-    </div>
+  <div class="music-note-container">
+    <svg id="userQuaver" viewBox="0 0 450 675">
 
-    <svg class="shaker-outline" viewBox="0 0 400 700" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
-        
-        <path d="M130 180 V130 C130 105 145 100 160 100 H240 C255 100 270 105 270 130 V180 H130 Z" />
+      <defs>
+        <linearGradient id="fillGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop id="fillStop1" offset="0%" stop-color="#0055FF" /> <stop id="fillStop2" offset="0%" stop-color="rgba(30,30,30,0.2)" />
+        </linearGradient>
+      </defs>
 
-        <path d="M110 180 L115 190 C125 210 100 260 60 280 H340 C300 260 275 210 285 190 L290 180" />
-        
-        <rect x="40" y="280" width="320" height="50" rx="10" />
-        
-        <path d="M50 330 L 80 620 C 82 640 100 650 120 650 H 280 C 300 650 318 640 320 620 L 350 330" />
-
+      <path d="M 254.2 82.9 C 255.8 82.2 257.6 82.2 259.1 83 C 275.9 91.3 300.3 108.7 319.8 134.2 C 339.4 159.7 354.2 193.6 351 234.7 C 348.1 272.2 361.5 296 379.1 310.8 C 396.9 325.9 419.4 332 434.6 332.9 C 437.1 333.1 439.2 334.9 439.7 337.4 C 440.2 340 438.9 342.5 436.6 343.6 C 416.1 353.2 383.8 361.9 354 356 C 339 353 324.5 346.2 312.6 334 C 300.7 321.7 291.7 304.3 287.1 280.4 C 286.1 275.1 285.1 271.1 284 268.1 C 283.2 265.9 282.5 264.6 282 263.8 C 281.7 264 281.4 264.3 281.1 264.8 C 278.5 268 275.5 274.3 272.1 283.5 C 268.7 292.6 265.2 304 261.7 317.1 C 247.4 369.6 232.3 447.6 221.1 505.9 C 220.7 507.8 220.4 509.7 220 511.6 C 216.3 557.5 169.7 592.2 115 592.2 C 58.1 592.2 9.8 554.5 9.8 505.7 C 9.8 457 58.1 419.3 115 419.3 C 136.6 419.3 156.8 424.7 173.5 433.9 L 251.2 86.8 C 251.5 85.1 252.7 83.7 254.2 82.9 Z"
+        fill="url(#fillGradient)"
+        stroke="var(--glow-color)"
+        stroke-width="8"/>
     </svg>
-
   </div>
-
 </div>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-/* ================= CONFIGURACIÓN ================= */
-const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxDe-9KMaNos7YfBJIJCCiBDTM2yFsM2JXM3GxizRQbyFy-VEfuJjJv0nqlVu_I-nY7Gw/exec"; 
+/* ============================ CONFIG ============================*/
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzVTnpCCoLs54928T3FCIFHJy7X-HMg_Lp2oew5NRcKKOBw57c-VgK6PVjufC65uAxt/exec"; 
 
-/* ================= VARIABLES ================= */
+/* ============================ VARIABLES ============================*/
 const DOM = {
   overlayStart: document.getElementById("overlay-start"),
   overlayResults: document.getElementById("overlay-results"),
-  startButton: document.getElementById("startButton"),
-  liquid: document.getElementById("liquid"),
-  finalTimeDisplay: document.getElementById("final-time"),
-  finalMessageDisplay: document.getElementById("final-message"),
-  canvas: document.getElementById("confetti-canvas"),
-  gameArea: document.getElementById("gameArea"),
-  nameInput: document.getElementById("playerName")
-};
-
-let playerName = "";
-
-const GameState = {
-  beats: 0,
-  targetBeats: 600, 
-  isGameActive: false,
-  startTime: 0,
-  confettiLauncher: confetti.create(DOM.canvas, { resize: true, useWorker: true })
-};
-
-/* ================= SENSORES ================= */
-function vibrate(p) {
-  if (navigator.vibrate) navigator.vibrate(p);
-}
-
-function handleMotion(event) {
-  if (!GameState.isGameActive) return;
-
-  const a = event.acceleration;
-  const power = Math.abs(a.x||0) + Math.abs(a.y||0) + Math.abs(a.z||0);
-
-  if (power > 20) {
-    GameState.beats++;
-    const pct = Math.min(GameState.beats / GameState.targetBeats * 100, 100);
-    
-    // Subir el líquido
-    DOM.liquid.style.height = `${pct}%`;
-    vibrate(30);
-
-    if (GameState.beats >= GameState.targetBeats) endGame();
-  }
-}
-
-/* ================= FINAL ================= */
-function endGame() {
-  GameState.isGameActive = false;
-  window.removeEventListener("devicemotion", handleMotion);
-  const finalTime = ((Date.now() - GameState.startTime) / 1000).toFixed(2);
-  DOM.finalMessageDisplay.innerText = "¡Completado!";
-  DOM.finalTimeDisplay.innerText = `${finalTime}s`;
-  DOM.overlayResults.classList.remove("hidden");
-  vibrate([200, 100, 200]);
-  launchConfetti();
-  sendToSheet(playerName || "Anónimo", finalTime);
-}
-
-/* ================= GOOGLE SHEETS ================= */
-function sendToSheet(name, time) {
-  if (!WEBHOOK_URL) return;
-  fetch(WEBHOOK_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: name, time: time })
-  }).catch(console.error);
-}
-
-/* ================= CONFETTI ================= */
-function launchConfetti() {
-  const end = Date.now() + 2500;
-  (function frame() {
-    GameState.confettiLauncher({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 } });
-    GameState.confettiLauncher({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 } });
-    if (Date.now() < end) requestAnimationFrame(frame);
-  }());
-}
-
-/* ================= INICIO ================= */
-async function startGame() {
-  const nameInput = DOM.nameInput.value.trim();
-  if (!nameInput) { alert("¡Ingresa tu nombre!"); return; }
-  playerName = nameInput;
-
-  DOM.overlayStart.classList.add("hidden");
-  DOM.gameArea.style.display = "flex";
-
-  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === "function") {
-    try {
-      const p = await DeviceMotionEvent.requestPermission();
-      if (p !== "granted") { alert("Se requiere permiso de movimiento."); return; }
-    } catch (e) { console.error(e); }
-  }
-
-  GameState.isGameActive = true;
-  GameState.startTime = Date.now();
-  GameState.beats = 0;
-  DOM.liquid.style.height = "0%";
-  window.addEventListener("devicemotion", handleMotion);
-  vibrate(100);
-}
-
-DOM.startButton.addEventListener("click", startGame);
-</script>
-
-</body>
-</html>
