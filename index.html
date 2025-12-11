@@ -9,7 +9,6 @@
 :root {
   --sap-blue: #00A1E0;
   --neon-pink: #FF00FF;
-  --electric-blue: #03DAC6;
   --dark-background: #1A1A2E;
   --glow-color: #E0F7FA;
   --amber: #9D2235;
@@ -101,34 +100,34 @@ body {
   justify-content: center;
 }
 
-/* ESTRUCTURA DE LA COCTELERA */
+/* ESTRUCTURA DE LA COCTELERA 
+   Aumentamos el tamaño del contenedor para acomodar el nuevo SVG más ancho
+*/
 .shaker-wrapper {
   position: relative;
-  width: 300px;  
-  height: 520px; 
+  width: 320px;  /* Más ancho */
+  height: 576px; /* Proporción correcta */
   animation: breathing 3s infinite alternate ease-in-out;
 }
 
-/* DEFINICIONES SVG COMPARTIDAS
-   Para asegurar que la máscara (líquido) y el borde (lineas) sean IDÉNTICOS,
-   usamos las mismas coordenadas exactas.
+/* DEFINICIÓN DE LA GEOMETRÍA SVG 
+   He creado un ViewBox de 500x900 para dar espacio de sobra y evitar recortes.
+   Las coordenadas están calculadas para imitar exactamente la imagen de referencia.
 */
 
-/* CAPA 1: EL CONTENEDOR DEL LÍQUIDO (MÁSCARA SÓLIDA) */
+/* CAPA 1: MÁSCARA DEL LÍQUIDO */
 .liquid-container {
   position: absolute;
   top: 0; left: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
-  background-color: rgba(255,255,255,0.1); /* Color del vaso vacío */
+  background-color: rgba(255,255,255,0.05); /* Fondo muy sutil */
   
-  /* MÁSCARA: Esta es la silueta rellena de negro. 
-     Define el volumen interno.
-  */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 350'%3E%3C!-- Tapa Pequeña --%3E%3Cpath d='M70 45 L70 30 A 30 30 0 0 1 130 30 L 130 45 Z' fill='black'/%3E%3C!-- Domo/Hombros --%3E%3Cpath d='M45 100 Q 45 45 100 45 Q 155 45 155 100 Z' fill='black'/%3E%3C!-- Anillo Central --%3E%3Crect x='30' y='100' width='140' height='25' rx='8' fill='black'/%3E%3C!-- Vaso Inferior --%3E%3Cpath d='M40 125 L 60 320 A 20 20 0 0 0 140 320 L 160 125 Z' fill='black'/%3E%3C/svg%3E");
+  /* Máscara Sólida Negra (Relleno interno) */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 900'%3E%3C!-- Tapa --%3E%3Cpath d='M180 120 L180 60 A 40 40 0 0 1 320 60 L 320 120 Z' fill='black'/%3E%3C!-- Domo --%3E%3Cpath d='M130 250 C 130 150 180 120 180 120 L 320 120 C 320 120 370 150 370 250 Z' fill='black'/%3E%3C!-- Anillo --%3E%3Crect x='100' y='250' width='300' height='60' rx='15' fill='black'/%3E%3C!-- Vaso --%3E%3Cpath d='M120 300 L 160 800 A 60 60 0 0 0 340 800 L 380 300 Z' fill='black'/%3E%3C/svg%3E");
   
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 350'%3E%3C!-- Tapa Pequeña --%3E%3Cpath d='M70 45 L70 30 A 30 30 0 0 1 130 30 L 130 45 Z' fill='black'/%3E%3C!-- Domo/Hombros --%3E%3Cpath d='M45 100 Q 45 45 100 45 Q 155 45 155 100 Z' fill='black'/%3E%3C!-- Anillo Central --%3E%3Crect x='30' y='100' width='140' height='25' rx='8' fill='black'/%3E%3C!-- Vaso Inferior --%3E%3Cpath d='M40 125 L 60 320 A 20 20 0 0 0 140 320 L 160 125 Z' fill='black'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 900'%3E%3C!-- Tapa --%3E%3Cpath d='M180 120 L180 60 A 40 40 0 0 1 320 60 L 320 120 Z' fill='black'/%3E%3C!-- Domo --%3E%3Cpath d='M130 250 C 130 150 180 120 180 120 L 320 120 C 320 120 370 150 370 250 Z' fill='black'/%3E%3C!-- Anillo --%3E%3Crect x='100' y='250' width='300' height='60' rx='15' fill='black'/%3E%3C!-- Vaso --%3E%3Cpath d='M120 300 L 160 800 A 60 60 0 0 0 340 800 L 380 300 Z' fill='black'/%3E%3C/svg%3E");
   
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -149,7 +148,7 @@ body {
   transition: height 0.1s linear;
 }
 
-/* CAPA 2: EL BORDE (OVERLAY VISUAL) */
+/* CAPA 2: EL CONTORNO (SVG VISIBLE) */
 .shaker-outline {
   position: absolute;
   top: 0; left: 0;
@@ -157,6 +156,7 @@ body {
   height: 100%;
   z-index: 2;
   pointer-events: none;
+  /* Glow sutil para destacar sobre fondo oscuro */
   filter: drop-shadow(0 0 8px var(--glow-color));
 }
 
@@ -200,15 +200,15 @@ body {
       <div id="liquid" class="liquid"></div>
     </div>
 
-    <svg class="shaker-outline" viewBox="0 0 200 350" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <svg class="shaker-outline" viewBox="0 0 500 900" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="25" stroke-linecap="round" stroke-linejoin="round">
         
-        <path d="M70 45 L70 30 A 30 30 0 0 1 130 30 L 130 45 Z" />
+        <path d="M180 120 L180 60 A 40 40 0 0 1 320 60 L 320 120 Z" />
 
-        <path d="M45 100 Q 45 45 100 45 Q 155 45 155 100" />
+        <path d="M130 250 C 130 150 180 120 180 120 L 320 120 C 320 120 370 150 370 250" />
         
-        <rect x="30" y="100" width="140" height="25" rx="8" fill="var(--dark-background)" />
+        <rect x="100" y="250" width="300" height="60" rx="15" fill="var(--dark-background)" />
         
-        <path d="M40 125 L 60 320 A 20 20 0 0 0 140 320 L 160 125" />
+        <path d="M120 310 L 160 800 A 60 60 0 0 0 340 800 L 380 310" />
 
     </svg>
 
