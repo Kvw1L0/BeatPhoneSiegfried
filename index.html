@@ -12,15 +12,13 @@
   --electric-blue: #03DAC6;
   --dark-background: #1A1A2E;
   --glow-color: #E0F7FA;
-  --amber: #9D2235; /* Color corporativo */
+  --amber: #9D2235;
 }
 
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--dark-background);
-  /* Si tienes una imagen de fondo, descomenta la siguiente línea: */
-  /* background-image: url("fondo.jpg"); */
   color: white;
   text-align: center;
   overflow: hidden;
@@ -30,11 +28,9 @@ body {
   height: 100vh;
   width: 100vw;
   padding: 0;
-  background-size: cover;
-  background-position: center;
 }
 
-/* --- OVERLAY (Pantallas de inicio/fin) --- */
+/* --- OVERLAY --- */
 .overlay {
   position: fixed;
   inset: 0;
@@ -71,9 +67,7 @@ body {
   box-shadow: 0 0 15px var(--amber);
 }
 
-#startButton:active {
-  transform: scale(0.95);
-}
+#startButton:active { transform: scale(0.95); }
 
 /* RESULTADOS */
 #overlay-results .results-wrapper {
@@ -82,16 +76,14 @@ body {
   animation: result-appear 0.6s forwards;
 }
 
-@keyframes result-appear {
-  to { transform: scale(1); opacity: 1; }
-}
+@keyframes result-appear { to { transform: scale(1); opacity: 1; } }
 
 .final-message {
   font-size: 2.8em;
   font-weight: 700;
   margin-bottom: 10px;
   color: var(--amber);
-  text-shadow: 0 0 8px var(--amber), 0 0 15px white;
+  text-shadow: 0 0 8px var(--amber);
 }
 
 .final-time-value {
@@ -99,11 +91,11 @@ body {
   font-weight: 900;
   color: var(--amber);
   -webkit-text-stroke: 2px white;
-  text-shadow: 0 0 10px var(--amber), 0 0 30px var(--neon-pink);
+  text-shadow: 0 0 10px var(--amber);
 }
 
 .game-area {
-  display: none; /* Se activa con JS */
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -112,19 +104,22 @@ body {
 }
 
 /* ==============================================================
-   NUEVA SECCIÓN: MÁSCARA DE IMAGEN (El reemplazo del SVG Path)
+   SOLUCIÓN APLICADA: MÁSCARA SVG DE COCTELERA (SHAKER)
    ============================================================== */
 
 .mask-container {
-  width: 300px;  /* Ancho de tu imagen */
-  height: 400px; /* Alto de tu imagen */
+  width: 280px;  /* Ajustado para proporción de coctelera */
+  height: 450px; 
   position: relative;
   
-  /* Esto crea una "silueta fantasma" vacía para que el usuario vea qué tiene que llenar */
+  /* Color de fondo "fantasma" (el recipiente vacío) */
   background-color: rgba(255, 255, 255, 0.15); 
-  mask-image: url('logo.png');
-
   
+  /* AQUÍ ESTÁ LA MAGIA: He convertido tu logo en una silueta vectorial */
+  --shaker-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M336 128h-34.9C291 58.6 257.6 15 257.6 15c-4.7-6-11.8-9.5-19.4-9.5h-92.5c-7.6 0-14.7 3.5-19.4 9.5 0 0-33.4 43.6-43.5 113H48c-26.5 0-48 21.5-48 48v32c0 26.5 21.5 48 48 48v208c0 26.5 21.5 48 48 48h192c26.5 0 48-21.5 48-48V256c26.5 0 48-21.5 48-48v-32c0-26.5-21.5-48-48-48zm-64-80c7.8 15.3 22.1 48 28.6 80h-217c6.6-32.1 20.8-64.8 28.6-80h159.8z'/%3E%3C/svg%3E");
+
+  -webkit-mask-image: var(--shaker-url);
+  mask-image: var(--shaker-url);
 
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -134,40 +129,42 @@ body {
   mask-position: center;
 
   margin-bottom: 30px;
-  
-  /* Animación de respiración mientras espera */
   animation: breathing 3s infinite alternate ease-in-out;
 }
 
 @keyframes breathing {
   from { transform: scale(1); filter: drop-shadow(0 0 5px var(--glow-color)); }
-  to { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--glow-color)); }
+  to { transform: scale(1.03); filter: drop-shadow(0 0 15px var(--glow-color)); }
 }
 
 /* El líquido que sube */
 .liquid {
   width: 100%;
-  height: 0%; /* JS cambiará esto de 0% a 100% */
+  height: 0%; 
   position: absolute;
   bottom: 0;
   left: 0;
-  
-  /* Gradiente bonito estilo Siegfried (Rojo/Amber) */
-  background: linear-gradient(to top, #7d1a29, var(--amber), #ff4d4d);
-  
-  transition: height 0.1s linear; /* Suavidad al subir */
+  /* Gradiente rojo/amber como pediste */
+  background: linear-gradient(to top, #5e0d1b, var(--amber), #ff4d4d);
+  transition: height 0.1s linear;
 }
 
-/* ============================================================== */
+/* DETALLE EXTRA: Borde brillante sobre el líquido */
+.mask-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--glow-color); 
+  /* Usamos la misma máscara pero solo para pintar el borde si quisieras, 
+     por ahora lo dejaremos simple para asegurar compatibilidad */
+  opacity: 0.1; 
+  pointer-events: none;
+}
 
 #confetti-canvas {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10001;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 10001;
 }
 </style>
 </head>
