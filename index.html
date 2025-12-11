@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>SIEGFRIED Shake it challenge </title>
+<title>SIEGFRIED Shake it Challenge</title>
 
 <style>
 :root {
@@ -12,23 +12,21 @@
   --electric-blue: #03DAC6;
   --dark-background: #1A1A2E;
   --glow-color: #E0F7FA;
-  --amber: #9D2235;
+  --amber: #9D2235; /* Color corporativo */
 }
 
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--dark-background);
-  background-image: url("fondo.jpg"); /* Asegúrate de que esta imagen exista */
+  /* Si tienes una imagen de fondo, descomenta la siguiente línea: */
+  /* background-image: url("fondo.jpg"); */
   color: white;
   text-align: center;
   overflow: hidden;
-   
-  /* FIX de alineación */
   display: flex;
   justify-content: center;
   align-items: center;
-
   height: 100vh;
   width: 100vw;
   padding: 0;
@@ -36,7 +34,7 @@ body {
   background-position: center;
 }
 
-/* --- OVERLAY --- */
+/* --- OVERLAY (Pantallas de inicio/fin) --- */
 .overlay {
   position: fixed;
   inset: 0;
@@ -45,19 +43,15 @@ body {
   background: rgba(26, 26, 46, 0.95);
   backdrop-filter: blur(10px);
   z-index: 10000;
-
-  /* FIX de centrado real */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   padding: 0 !important;
   opacity: 1;
   pointer-events: auto;
   transition: opacity 0.5s ease-out;
 }
-
 
 .overlay.hidden {
   opacity: 0;
@@ -109,29 +103,65 @@ body {
 }
 
 .game-area {
-  display: none;
+  display: none; /* Se activa con JS */
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.music-note-container {
-  width: 328px;
-  margin-bottom: 20px;
-  filter: drop-shadow(0 0 8px var(--glow-color));
-  animation: breathing 4s infinite alternate;
+/* ==============================================================
+   NUEVA SECCIÓN: MÁSCARA DE IMAGEN (El reemplazo del SVG Path)
+   ============================================================== */
+
+.mask-container {
+  width: 300px;  /* Ancho de tu imagen */
+  height: 400px; /* Alto de tu imagen */
+  position: relative;
+  
+  /* Esto crea una "silueta fantasma" vacía para que el usuario vea qué tiene que llenar */
+  background-color: rgba(255, 255, 255, 0.15); 
+  
+  /* 👇 ⚠️ CAMBIA ESTO POR TU IMAGEN ⚠️ 👇 */
+  /* Ejemplo: mask-image: url('mi-logo-siegfried.png'); */
+  /* He puesto un RAYO SVG por defecto usando DataURI para que funcione ahora mismo */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M273.5 135.4l-75 125h63.3c14.2 0 23.3 16.2 14.8 28.5l-136 192C136 488.5 128 488.2 128 480V320H64.2c-14.7 0-23.4-16.7-14.4-28.8l128-176c4.3-5.9 13.6-2.9 13.6 4.4V256h64V32c0-10.4 12.3-15.9 20.3-8.8l72 64c8.3 7.4 3.7 21.6-7.3 21.6h-58.8l72.4-78.2c8.6-9.3-5.1-23.4-16.3-16.9L166.7 135.4z'/%3E%3Cpath fill='black' d='M112.1 454.3L236.3 280h-64v-96h80l-96-128v80h-64l96 128v-80h64l-124 176c-3.7 5.2-12.4 2.8-12.4-3.7V320H80v-42.7l96-132v98.7h64V128l-80-106.7v96h-64L192 0v117.3H112.1c-14.9 0-23.7 16.9-14.7 29.1zM256 0h-25.6L128 128h64v96h-80l96 128v-80h64l-96-128v80h-64z'/%3E%3Cpath d='M256 0c-14.1 0-25.6 11.5-25.6 25.6v114.3h-96c-10.6 0-20.1 6.6-23.8 16.5s-1.4 21.1 5.9 28.6l160 192c6.6 7.9 16.3 12.5 26.6 12.5s20-4.6 26.6-12.5l160-192c7.3-7.5 9.6-18.7 5.9-28.6s-13.2-16.5-23.8-16.5h-96V25.6C307.2 11.5 295.7 0 281.6 0h-25.6zm0 64h25.6v114.3c0 14.1 11.5 25.6 25.6 25.6h69.5L256 375.7 135.3 230.4h69.5c14.1 0 25.6-11.5 25.6-25.6V64z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512'%3E%3Cpath d='M296 160H180.6l42.6-129.8C227.2 15 215.7 0 200 0H56C42.7 0 32 10.7 32 24c0 11.2 7.7 20.7 18.2 23.2L91.4 160H24c-13.3 0-24 10.7-24 24 0 7.6 3.6 14.3 9.1 18.7L213.1 510.9c9.3 7.3 22.9 1.1 23.4-10.7.2-4.1-1.3-8-4-11L139.4 352H264c13.3 0 24-10.7 24-24 0-7.6-3.6-14.3-9.1-18.7L73.9 160h222.1c13.3 0 24-10.7 24-24s-10.7-24-24-24z'/%3E%3C/svg%3E");
+
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+
+  margin-bottom: 30px;
+  
+  /* Animación de respiración mientras espera */
+  animation: breathing 3s infinite alternate ease-in-out;
 }
 
 @keyframes breathing {
-  from { transform: scale(1); }
-  to { transform: scale(1.03); }
+  from { transform: scale(1); filter: drop-shadow(0 0 5px var(--glow-color)); }
+  to { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--glow-color)); }
 }
 
-footer {
-  opacity: 0.4;
-  font-size: 12px;
-  padding: 10px 0;
+/* El líquido que sube */
+.liquid {
+  width: 100%;
+  height: 0%; /* JS cambiará esto de 0% a 100% */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  
+  /* Gradiente bonito estilo Siegfried (Rojo/Amber) */
+  background: linear-gradient(to top, #7d1a29, var(--amber), #ff4d4d);
+  
+  transition: height 0.1s linear; /* Suavidad al subir */
 }
+
+/* ============================================================== */
 
 #confetti-canvas {
   position: fixed;
@@ -149,7 +179,7 @@ footer {
 
 <div id="overlay-start" class="overlay">
   <h2>¡SIEGFRIED Shake it Challenge! ⚡</h2>
-  <p>Agita tu celular lo más rápido que puedas para cargar la nota musical.</p>
+  <p>Agita tu celular lo más rápido que puedas para cargar la energía.</p>
 
   <input id="playerName" type="text" placeholder="Tu nombre" 
     style="margin-top:15px;padding:12px;width:80%;font-size:18px;border-radius:8px;border:none;">
@@ -167,31 +197,19 @@ footer {
 <canvas id="confetti-canvas"></canvas>
 
 <div id="gameArea" class="game-area">
-  <div class="music-note-container">
-    <svg id="userQuaver" viewBox="0 0 450 675">
-
-      <defs>
-        <linearGradient id="fillGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop id="fillStop1" offset="0%" stop-color="var(--amber)" />
-          <stop id="fillStop2" offset="0%" stop-color="rgba(30,30,30,0.2)" />
-        </linearGradient>
-      </defs>
-
-      <path d="M 254.2 82.9 C 255.8 82.2 257.6 82.2 259.1 83 C 275.9 91.3 300.3 108.7 319.8 134.2 C 339.4 159.7 354.2 193.6 351 234.7 C 348.1 272.2 361.5 296 379.1 310.8 C 396.9 325.9 419.4 332 434.6 332.9 C 437.1 333.1 439.2 334.9 439.7 337.4 C 440.2 340 438.9 342.5 436.6 343.6 C 416.1 353.2 383.8 361.9 354 356 C 339 353 324.5 346.2 312.6 334 C 300.7 321.7 291.7 304.3 287.1 280.4 C 286.1 275.1 285.1 271.1 284 268.1 C 283.2 265.9 282.5 264.6 282 263.8 C 281.7 264 281.4 264.3 281.1 264.8 C 278.5 268 275.5 274.3 272.1 283.5 C 268.7 292.6 265.2 304 261.7 317.1 C 247.4 369.6 232.3 447.6 221.1 505.9 C 220.7 507.8 220.4 509.7 220 511.6 C 216.3 557.5 169.7 592.2 115 592.2 C 58.1 592.2 9.8 554.5 9.8 505.7 C 9.8 457 58.1 419.3 115 419.3 C 136.6 419.3 156.8 424.7 173.5 433.9 L 251.2 86.8 C 251.5 85.1 252.7 83.7 254.2 82.9 Z"
-        fill="url(#fillGradient)"
-        stroke="var(--glow-color)"
-        stroke-width="8"/>
-    </svg>
+  
+  <div class="mask-container">
+    <div id="liquid" class="liquid"></div>
   </div>
-</div>
 
+</div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
 /* ============================ CONFIG ============================*/
-// 👇 ¡IMPORTANTE! PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT ENTRE LAS COMILLAS 👇
+// 👇 ¡NO OLVIDES PONER TU URL DEL SCRIPT DE GOOGLE AQUÍ! 👇
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxDe-9KMaNos7YfBJIJCCiBDTM2yFsM2JXM3GxizRQbyFy-VEfuJjJv0nqlVu_I-nY7Gw/exec"; 
 
 /* ============================ VARIABLES ============================*/
@@ -199,8 +217,7 @@ const DOM = {
   overlayStart: document.getElementById("overlay-start"),
   overlayResults: document.getElementById("overlay-results"),
   startButton: document.getElementById("startButton"),
-  fillStop1: document.getElementById("fillStop1"),
-  fillStop2: document.getElementById("fillStop2"),
+  liquid: document.getElementById("liquid"), // Nueva referencia al líquido
   finalTimeDisplay: document.getElementById("final-time"),
   finalMessageDisplay: document.getElementById("final-message"),
   canvas: document.getElementById("confetti-canvas"),
@@ -212,7 +229,7 @@ let playerName = "";
 
 const GameState = {
   beats: 0,
-  targetBeats: 600,
+  targetBeats: 600, // Ajusta la dificultad aquí (más alto = más difícil)
   isGameActive: false,
   startTime: 0,
   confettiLauncher: confetti.create(DOM.canvas, { resize: true, useWorker: true })
@@ -227,17 +244,21 @@ function handleMotion(event) {
   if (!GameState.isGameActive) return;
 
   const a = event.acceleration;
+  // Calculamos la fuerza total del movimiento
   const power = Math.abs(a.x||0) + Math.abs(a.y||0) + Math.abs(a.z||0);
 
-  // Umbral de movimiento
+  // Umbral de sensibilidad (ajústalo si es muy fácil/difícil)
   if (power > 20) {
     GameState.beats++;
 
+    // Calculamos el porcentaje (0 a 100)
     const pct = Math.min(GameState.beats / GameState.targetBeats * 100, 100);
-    DOM.fillStop1.setAttribute("offset", pct + "%");
-    DOM.fillStop2.setAttribute("offset", pct + "%");
+    
+    // 👇 ACTUALIZAMOS LA ALTURA DEL LÍQUIDO (CSS)
+    DOM.liquid.style.height = `${pct}%`;
 
-    vibrate(50);
+    // Vibración suave en cada "beat"
+    vibrate(30);
 
     if (GameState.beats >= GameState.targetBeats) {
       endGame();
@@ -260,11 +281,10 @@ function endGame() {
   vibrate([200, 100, 200]);
   launchConfetti();
 
-  // Aquí enviamos los datos usando la función corregida
-  sendToSheet(playerName || "SIN_NOMBRE", finalTime);
+  sendToSheet(playerName || "JUGADOR_ANONIMO", finalTime);
 }
 
-/* ============================ GOOGLE SHEETS (CORREGIDO) ============================*/
+/* ============================ GOOGLE SHEETS ============================*/
 function sendToSheet(name, time) {
   console.log("Enviando datos...", name, time);
   
@@ -275,44 +295,26 @@ function sendToSheet(name, time) {
 
   fetch(WEBHOOK_URL, {
     method: "POST",
-    mode: "no-cors", // Importante para evitar bloqueos de navegador
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name: name,
-      time: time
-    })
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: name, time: time })
   })
-  .then(() => {
-    console.log("✅ Datos enviados (modo no-cors)");
-  })
-  .catch(err => {
-    console.error("❌ Error enviando datos:", err);
-  });
+  .then(() => console.log("✅ Datos enviados"))
+  .catch(err => console.error("❌ Error enviando datos:", err));
 }
 
 /* ============================ CONFETTI ============================*/
 function launchConfetti() {
   const end = Date.now() + 2500;
-
   function frame() {
     GameState.confettiLauncher({
-      particleCount: 3,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0 }
+      particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }
     });
     GameState.confettiLauncher({
-      particleCount: 3,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1 }
+      particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }
     });
-
     if (Date.now() < end) requestAnimationFrame(frame);
   }
-
   frame();
 }
 
@@ -322,11 +324,10 @@ function initializeGame() {
   GameState.startTime = Date.now();
   GameState.beats = 0;
 
-  DOM.fillStop1.setAttribute("offset", "0%");
-  DOM.fillStop2.setAttribute("offset", "0%");
+  // Reiniciar la barra al 0%
+  DOM.liquid.style.height = "0%";
 
   window.addEventListener("devicemotion", handleMotion);
-
   vibrate(100);
 }
 
@@ -343,7 +344,7 @@ async function startGame() {
   DOM.overlayStart.classList.add("hidden");
   DOM.gameArea.style.display = "flex";
 
-  // Pedir permisos de sensor en iOS 13+
+  // Permisos para iOS 13+
   if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === "function") {
     try {
       const permission = await DeviceMotionEvent.requestPermission();
@@ -353,7 +354,7 @@ async function startGame() {
       }
     } catch (e) {
       console.error(e);
-      alert("Error solicitando permisos: " + e);
+      alert("Error solicitando permisos en iOS.");
       return;
     }
   }
