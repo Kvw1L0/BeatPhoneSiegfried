@@ -7,25 +7,34 @@
 
 <style>
 :root {
+  --sap-blue: #00A1E0;
+  --neon-pink: #FF00FF;
+  --electric-blue: #03DAC6;
   --dark-background: #1A1A2E;
-  --amber: #e2ab23;
-  --blue-fill: #0044FF; /* AZUL INTENSO */
   --glow-color: #E0F7FA;
+  --amber: #e2ab23; /* Mantenido por compatibilidad, pero no se usará en el relleno */
+  --blue-fill: #0044FF; /* NUEVO COLOR AZUL */
 }
 
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--dark-background);
+  background-image: url("fondo.jpg"); /* Tu fondo original */
   color: white;
   text-align: center;
   overflow: hidden;
+    
+  /* FIX de alineación */
   display: flex;
   justify-content: center;
   align-items: center;
+
   height: 100vh;
   width: 100vw;
   padding: 0;
+  background-size: cover;
+  background-position: center;
 }
 
 /* --- OVERLAY --- */
@@ -37,15 +46,19 @@ body {
   background: rgba(26, 26, 46, 0.95);
   backdrop-filter: blur(10px);
   z-index: 10000;
+
+  /* FIX de centrado real */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   padding: 0 !important;
   opacity: 1;
   pointer-events: auto;
   transition: opacity 0.5s ease-out;
 }
+
 
 .overlay.hidden {
   opacity: 0;
@@ -58,7 +71,7 @@ body {
   font-size: 20px;
   font-weight: bold;
   color: white;
-  background-color: var(--blue-fill);
+  background-color: var(--blue-fill); /* Botón Azul */
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -85,7 +98,7 @@ body {
   font-weight: 700;
   margin-bottom: 10px;
   color: var(--blue-fill);
-  text-shadow: 0 0 15px white;
+  text-shadow: 0 0 8px var(--blue-fill), 0 0 15px white;
 }
 
 .final-time-value {
@@ -93,19 +106,21 @@ body {
   font-weight: 900;
   color: var(--blue-fill);
   -webkit-text-stroke: 2px white;
-  text-shadow: 0 0 10px var(--blue-fill);
+  text-shadow: 0 0 10px var(--blue-fill), 0 0 30px var(--neon-pink);
 }
 
-/* --- ÁREA DE JUEGO (COCTELERA) --- */
 .game-area {
   display: none;
-  width: 100%;
-  height: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%; /* Asegura ancho completo para la coctelera */
+  height: 100%;
 }
 
+/* ==========================================================================
+   ESTILOS DE LA COCTELERA (SHAKER) - Reemplaza a .music-note-container
+   ========================================================================== */
 .shaker-wrapper {
   position: relative;
   width: 320px;  
@@ -124,7 +139,6 @@ body {
   
   /* SILUETA SÓLIDA DE LA COCTELERA */
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 700'%3E%3Cpath d='M130 100 H270 C290 100 290 120 290 130 V180 H110 V130 C110 120 110 100 130 100 Z M 110 180 C 110 180 80 260 60 280 H 340 C 320 260 290 180 290 180 Z M 40 280 H 360 V 330 H 40 Z M 50 330 H 350 L 320 620 C 318 640 300 650 280 650 H 120 C 100 650 82 640 80 620 L 50 330 Z' fill='black'/%3E%3C/svg%3E");
-  
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 700'%3E%3Cpath d='M130 100 H270 C290 100 290 120 290 130 V180 H110 V130 C110 120 110 100 130 100 Z M 110 180 C 110 180 80 260 60 280 H 340 C 320 260 290 180 290 180 Z M 40 280 H 360 V 330 H 40 Z M 50 330 H 350 L 320 620 C 318 640 300 650 280 650 H 120 C 100 650 82 640 80 620 L 50 330 Z' fill='black'/%3E%3C/svg%3E");
   
   -webkit-mask-size: contain;
@@ -142,7 +156,7 @@ body {
   position: absolute;
   bottom: 0;
   left: 0;
-  /* CAMBIO DE COLOR AQUÍ 👇 */
+  /* CAMBIO DE COLOR A AZUL */
   background: var(--blue-fill); 
   transition: height 0.1s linear;
 }
@@ -160,13 +174,23 @@ body {
 
 @keyframes breathing {
   from { transform: scale(1); }
-  to { transform: scale(1.02); }
+  to { transform: scale(1.03); }
+}
+
+footer {
+  opacity: 0.4;
+  font-size: 12px;
+  padding: 10px 0;
 }
 
 #confetti-canvas {
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  pointer-events: none; z-index: 10001;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10001;
 }
 </style>
 </head>
@@ -211,17 +235,21 @@ body {
 
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-/* ================= CONFIGURACIÓN ================= */
+/* ============================ CONFIG ============================*/
+// 👇 TU URL ORIGINAL (RECUPERADA) 👇
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzVTnpCCoLs54928T3FCIFHJy7X-HMg_Lp2oew5NRcKKOBw57c-VgK6PVjufC65uAxt/exec"; 
 
-/* ================= VARIABLES ================= */
+/* ============================ VARIABLES ============================*/
 const DOM = {
   overlayStart: document.getElementById("overlay-start"),
   overlayResults: document.getElementById("overlay-results"),
   startButton: document.getElementById("startButton"),
+  // NOTA: Cambié fillStop por 'liquid' porque ahora es un DIV, no un SVG Gradient.
+  // Pero la lógica de actualización se mantiene, solo cambia el objetivo visual.
   liquid: document.getElementById("liquid"),
   finalTimeDisplay: document.getElementById("final-time"),
   finalMessageDisplay: document.getElementById("final-message"),
@@ -234,13 +262,13 @@ let playerName = "";
 
 const GameState = {
   beats: 0,
-  targetBeats: 600, 
+  targetBeats: 600,
   isGameActive: false,
   startTime: 0,
   confettiLauncher: confetti.create(DOM.canvas, { resize: true, useWorker: true })
 };
 
-/* ================= SENSORES ================= */
+/* ============================ SENSORES ============================*/
 function vibrate(p) {
   if (navigator.vibrate) navigator.vibrate(p);
 }
@@ -251,27 +279,32 @@ function handleMotion(event) {
   const a = event.acceleration;
   const power = Math.abs(a.x||0) + Math.abs(a.y||0) + Math.abs(a.z||0);
 
+  // Umbral de movimiento
   if (power > 20) {
     GameState.beats++;
+
     const pct = Math.min(GameState.beats / GameState.targetBeats * 100, 100);
     
-    // Subir el líquido (Estilo Coctelera)
-    DOM.liquid.style.height = `${pct}%`;
-    
-    vibrate(30);
+    // AQUÍ ESTÁ EL CAMBIO VISUAL: Antes era setAttribute('offset'), ahora es style.height
+    // Pero la matemática (pct) y la lógica de disparo es IDÉNTICA.
+    DOM.liquid.style.height = pct + "%";
 
-    if (GameState.beats >= GameState.targetBeats) endGame();
+    vibrate(50);
+
+    if (GameState.beats >= GameState.targetBeats) {
+      endGame();
+    }
   }
 }
 
-/* ================= FINAL ================= */
+/* ============================ FINAL ============================*/
 function endGame() {
   GameState.isGameActive = false;
   window.removeEventListener("devicemotion", handleMotion);
 
   const finalTime = ((Date.now() - GameState.startTime) / 1000).toFixed(2);
 
-  DOM.finalMessageDisplay.innerText = "¡Completado!";
+  DOM.finalMessageDisplay.innerText = "¡Rockeaste en!";
   DOM.finalTimeDisplay.innerText = `${finalTime}s`;
 
   DOM.overlayResults.classList.remove("hidden");
@@ -279,73 +312,108 @@ function endGame() {
   vibrate([200, 100, 200]);
   launchConfetti();
 
+  // Aquí enviamos los datos usando la función corregida
   sendToSheet(playerName || "SIN_NOMBRE", finalTime);
 }
 
-/* ================= GOOGLE SHEETS ================= */
+/* ============================ GOOGLE SHEETS (TU CÓDIGO ORIGINAL) ============================*/
 function sendToSheet(name, time) {
-  if (!WEBHOOK_URL) return;
+  console.log("Enviando datos...", name, time);
+   
+  if (WEBHOOK_URL.includes("TU_NUEVA_URL")) {
+    console.warn("⚠️ ¡Falta configurar la URL del Webhook!");
+    return;
+  }
 
   fetch(WEBHOOK_URL, {
     method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: name, time: time })
-  }).catch(console.error);
+    mode: "no-cors", // Importante para evitar bloqueos de navegador
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      time: time
+    })
+  })
+  .then(() => {
+    console.log("✅ Datos enviados (modo no-cors)");
+  })
+  .catch(err => {
+    console.error("❌ Error enviando datos:", err);
+  });
 }
 
-/* ================= CONFETTI ================= */
+/* ============================ CONFETTI ============================*/
 function launchConfetti() {
   const end = Date.now() + 2500;
+
   function frame() {
     GameState.confettiLauncher({
-      particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }
+      particleCount: 3,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 }
     });
     GameState.confettiLauncher({
-      particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }
+      particleCount: 3,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 }
     });
+
     if (Date.now() < end) requestAnimationFrame(frame);
   }
+
   frame();
 }
 
-/* ================= INICIO ================= */
+/* ============================ JUEGO ============================*/
+function initializeGame() {
+  GameState.isGameActive = true;
+  GameState.startTime = Date.now();
+  GameState.beats = 0;
+
+  // Reinicio visual (Adaptado al div liquid)
+  DOM.liquid.style.height = "0%";
+
+  window.addEventListener("devicemotion", handleMotion);
+
+  vibrate(100);
+}
+
 async function startGame() {
   const nameInput = DOM.nameInput.value.trim();
 
   if (!nameInput) {
-    alert("Por favor, ingresa tu nombre.");
+    alert("Escribe tu nombre primero 😉");
     return;
   }
 
   playerName = nameInput;
+
   DOM.overlayStart.classList.add("hidden");
   DOM.gameArea.style.display = "flex";
 
+  // Pedir permisos de sensor en iOS 13+
   if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === "function") {
     try {
       const permission = await DeviceMotionEvent.requestPermission();
       if (permission !== "granted") {
-        alert("Necesitas dar permiso de movimiento para jugar.");
+        alert("Debes permitir acceso al movimiento para jugar.");
         return;
       }
     } catch (e) {
       console.error(e);
+      alert("Error solicitando permisos: " + e);
+      return;
     }
   }
 
-  // Inicializar juego
-  GameState.isGameActive = true;
-  GameState.startTime = Date.now();
-  GameState.beats = 0;
-  
-  // Reiniciar altura del líquido (Estilo Coctelera)
-  DOM.liquid.style.height = "0%";
-  
-  window.addEventListener("devicemotion", handleMotion);
-  vibrate(100);
+  initializeGame();
 }
 
+/* ============================ EVENTO ============================*/
 DOM.startButton.addEventListener("click", startGame);
 </script>
 
