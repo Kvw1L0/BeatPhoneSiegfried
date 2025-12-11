@@ -101,28 +101,28 @@ body {
   justify-content: center;
 }
 
-/* ESTRUCTURA DE LA COCTELERA 
-   Usamos un contenedor relativo para apilar el líquido y el borde.
-*/
+/* ESTRUCTURA DE LA COCTELERA */
 .shaker-wrapper {
   position: relative;
-  width: 260px;  /* Ancho de la coctelera */
-  height: 420px; /* Alto de la coctelera */
+  width: 280px;  /* Ancho ajustado a la nueva imagen */
+  height: 480px; /* Alto ajustado a la nueva imagen */
   animation: breathing 3s infinite alternate ease-in-out;
 }
 
-/* CAPA 1: EL CONTENEDOR DEL LÍQUIDO (MÁSCARA) */
+/* CAPA 1: EL CONTENEDOR DEL LÍQUIDO (MÁSCARA SÓLIDA) 
+   Esta es la silueta negra sólida que permite que el juego funcione.
+*/
 .liquid-container {
   position: absolute;
   top: 0; left: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
-  background-color: rgba(255,255,255,0.1); /* Fondo gris suave para ver la forma vacía */
+  background-color: rgba(255,255,255,0.1);
   
-  /* Aquí definimos la silueta SÓLIDA de la coctelera para recortar el líquido */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 420'%3E%3Cpath d='M75 10 h110 c15 0 20 15 20 30 v10 h-150 v-10 c0 -15 5 -30 20 -30 Z M 30 60 h200 c20 0 20 40 20 60 v10 h-240 v-10 c0 -20 0 -60 20 -60 Z M 40 140 h180 l-30 250 c-5 20 -20 20 -30 20 h-60 c-10 0 -25 0 -30 -20 Z' fill='black'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 420'%3E%3Cpath d='M75 10 h110 c15 0 20 15 20 30 v10 h-150 v-10 c0 -15 5 -30 20 -30 Z M 30 60 h200 c20 0 20 40 20 60 v10 h-240 v-10 c0 -20 0 -60 20 -60 Z M 40 140 h180 l-30 250 c-5 20 -20 20 -30 20 h-60 c-10 0 -25 0 -30 -20 Z' fill='black'/%3E%3C/svg%3E");
+  /* Silueta SÓLIDA exacta de la imagen de referencia */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 640'%3E%3Cpath d='M112 0C85.5 0 64 21.5 64 48v48H16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h16l25.6 384C60.9 596 104.4 640 156.7 640h70.6c52.3 0 95.8-44 99.1-96L352 160h16c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-48V48c0-26.5-21.5-48-48-48H112z' fill='black'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 640'%3E%3Cpath d='M112 0C85.5 0 64 21.5 64 48v48H16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h16l25.6 384C60.9 596 104.4 640 156.7 640h70.6c52.3 0 95.8-44 99.1-96L352 160h16c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-48V48c0-26.5-21.5-48-48-48H112z' fill='black'/%3E%3C/svg%3E");
   
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -143,7 +143,9 @@ body {
   transition: height 0.1s linear;
 }
 
-/* CAPA 2: EL BORDE/CONTORNO (OVERLAY) */
+/* CAPA 2: EL BORDE/CONTORNO (OVERLAY VISUAL) 
+   Este es el dibujo de líneas exacto de la imagen de referencia.
+*/
 .shaker-outline {
   position: absolute;
   top: 0; left: 0;
@@ -194,12 +196,10 @@ body {
       <div id="liquid" class="liquid"></div>
     </div>
 
-    <svg class="shaker-outline" viewBox="0 0 260 420" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M75 10 h110 c15 0 20 15 20 30 v10 h-150 v-10 c0 -15 5 -30 20 -30 Z" stroke="white" stroke-width="8" stroke-linejoin="round"/>
-      <path d="M30 60 h200 c20 0 20 40 20 60 v10 h-240 v-10 c0 -20 0 -60 20 -60 Z" stroke="white" stroke-width="8" stroke-linejoin="round"/>
-      <rect x="30" y="130" width="240" height="15" fill="var(--dark-background)" />
-      <rect x="30" y="130" width="240" height="15" stroke="white" stroke-width="8" rx="5" />
-      <path d="M40 150 h180 l-30 250 c-5 20 -20 20 -30 20 h-60 c-10 0 -25 0 -30 -20 Z" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    <svg class="shaker-outline" viewBox="0 0 384 640" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M112 48V112H272V48C272 21.5 250.5 0 224 0H160C133.5 0 112 21.5 112 48Z"/>
+        <path d="M16 112H368V176H16V112Z"/>
+        <path d="M32 176L57.6 560C60.9 612 104.4 656 156.7 656H227.3C279.6 656 323.1 612 326.4 560L352 176H32Z" transform="translate(0 -16)"/>
     </svg>
 
   </div>
