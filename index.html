@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>SIEGFRIED Shake it Challenge</title>
+
 <style>
 :root {
   --sap-blue: #00A1E0;
@@ -23,7 +30,7 @@ body {
   padding: 0;
 }
 
-/* --- OVERLAY --- */
+/* --- OVERLAYS --- */
 .overlay {
   position: fixed;
   inset: 0;
@@ -37,8 +44,6 @@ body {
   justify-content: center;
   align-items: center;
   padding: 0 !important;
-  opacity: 1;
-  pointer-events: auto;
   transition: opacity 0.5s ease-out;
 }
 
@@ -68,7 +73,6 @@ body {
   opacity: 0;
   animation: result-appear 0.6s forwards;
 }
-
 @keyframes result-appear { to { transform: scale(1); opacity: 1; } }
 
 .final-message {
@@ -87,71 +91,72 @@ body {
   text-shadow: 0 0 10px var(--amber);
 }
 
+/* --- ÁREA DE JUEGO --- */
 .game-area {
   display: none;
+  width: 100%;
+  height: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
 }
 
-/* ==============================================================
-   SOLUCIÓN APLICADA: MÁSCARA SVG DE COCTELERA (SHAKER)
-   ============================================================== */
-
-.mask-container {
-  width: 280px;  /* Ajustado para proporción de coctelera */
-  height: 450px; 
+/* ESTRUCTURA DE LA COCTELERA 
+   Usamos un contenedor relativo para apilar el líquido y el borde.
+*/
+.shaker-wrapper {
   position: relative;
-  
-  /* Color de fondo "fantasma" (el recipiente vacío) */
-  background-color: rgba(255, 255, 255, 0.15); 
-  
-  /* AQUÍ ESTÁ LA MAGIA: He convertido tu logo en una silueta vectorial */
-  --shaker-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M336 128h-34.9C291 58.6 257.6 15 257.6 15c-4.7-6-11.8-9.5-19.4-9.5h-92.5c-7.6 0-14.7 3.5-19.4 9.5 0 0-33.4 43.6-43.5 113H48c-26.5 0-48 21.5-48 48v32c0 26.5 21.5 48 48 48v208c0 26.5 21.5 48 48 48h192c26.5 0 48-21.5 48-48V256c26.5 0 48-21.5 48-48v-32c0-26.5-21.5-48-48-48zm-64-80c7.8 15.3 22.1 48 28.6 80h-217c6.6-32.1 20.8-64.8 28.6-80h159.8z'/%3E%3C/svg%3E");
+  width: 260px;  /* Ancho de la coctelera */
+  height: 420px; /* Alto de la coctelera */
+  animation: breathing 3s infinite alternate ease-in-out;
+}
 
-  -webkit-mask-image: var(--shaker-url);
-  mask-image: var(--shaker-url);
-
+/* CAPA 1: EL CONTENEDOR DEL LÍQUIDO (MÁSCARA) */
+.liquid-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: rgba(255,255,255,0.1); /* Fondo gris suave para ver la forma vacía */
+  
+  /* Aquí definimos la silueta SÓLIDA de la coctelera para recortar el líquido */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 420'%3E%3Cpath d='M75 10 h110 c15 0 20 15 20 30 v10 h-150 v-10 c0 -15 5 -30 20 -30 Z M 30 60 h200 c20 0 20 40 20 60 v10 h-240 v-10 c0 -20 0 -60 20 -60 Z M 40 140 h180 l-30 250 c-5 20 -20 20 -30 20 h-60 c-10 0 -25 0 -30 -20 Z' fill='black'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 420'%3E%3Cpath d='M75 10 h110 c15 0 20 15 20 30 v10 h-150 v-10 c0 -15 5 -30 20 -30 Z M 30 60 h200 c20 0 20 40 20 60 v10 h-240 v-10 c0 -20 0 -60 20 -60 Z M 40 140 h180 l-30 250 c-5 20 -20 20 -30 20 h-60 c-10 0 -25 0 -30 -20 Z' fill='black'/%3E%3C/svg%3E");
+  
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
-
-  margin-bottom: 30px;
-  animation: breathing 3s infinite alternate ease-in-out;
 }
 
-@keyframes breathing {
-  from { transform: scale(1); filter: drop-shadow(0 0 5px var(--glow-color)); }
-  to { transform: scale(1.03); filter: drop-shadow(0 0 15px var(--glow-color)); }
-}
-
-/* El líquido que sube */
+/* El líquido en sí */
 .liquid {
   width: 100%;
-  height: 0%; 
+  height: 0%; /* JS controla esto */
   position: absolute;
   bottom: 0;
   left: 0;
-  /* Gradiente rojo/amber como pediste */
   background: linear-gradient(to top, #5e0d1b, var(--amber), #ff4d4d);
   transition: height 0.1s linear;
 }
 
-/* DETALLE EXTRA: Borde brillante sobre el líquido */
-.mask-container::after {
-  content: '';
+/* CAPA 2: EL BORDE/CONTORNO (OVERLAY) */
+.shaker-outline {
   position: absolute;
-  inset: 0;
-  background-color: var(--glow-color); 
-  /* Usamos la misma máscara pero solo para pintar el borde si quisieras, 
-     por ahora lo dejaremos simple para asegurar compatibilidad */
-  opacity: 0.1; 
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2; /* Encima del líquido */
   pointer-events: none;
+  filter: drop-shadow(0 0 5px var(--glow-color));
+}
+
+@keyframes breathing {
+  from { transform: scale(1); }
+  to { transform: scale(1.02); }
 }
 
 #confetti-canvas {
@@ -160,3 +165,159 @@ body {
   pointer-events: none; z-index: 10001;
 }
 </style>
+</head>
+
+<body>
+
+<div id="overlay-start" class="overlay">
+  <h2>¡SIEGFRIED Shake it Challenge! ⚡</h2>
+  <p>Agita tu celular para llenar la coctelera.</p>
+  <input id="playerName" type="text" placeholder="Tu nombre" 
+    style="margin-top:15px;padding:12px;width:80%;font-size:18px;border-radius:8px;border:none;">
+  <button id="startButton">¡Comenzar!</button>
+</div>
+
+<div id="overlay-results" class="overlay hidden">
+  <div class="results-wrapper">
+    <p class="final-message" id="final-message"></p>
+    <h2 class="final-time-value" id="final-time"></h2>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div id="gameArea" class="game-area">
+  
+  <div class="shaker-wrapper">
+    
+    <div class="liquid-container">
+      <div id="liquid" class="liquid"></div>
+    </div>
+
+    <svg class="shaker-outline" viewBox="0 0 260 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M75 10 h110 c15 0 20 15 20 30 v10 h-150 v-10 c0 -15 5 -30 20 -30 Z" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+      <path d="M30 60 h200 c20 0 20 40 20 60 v10 h-240 v-10 c0 -20 0 -60 20 -60 Z" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+      <rect x="30" y="130" width="240" height="15" fill="var(--dark-background)" />
+      <rect x="30" y="130" width="240" height="15" stroke="white" stroke-width="8" rx="5" />
+      <path d="M40 150 h180 l-30 250 c-5 20 -20 20 -30 20 h-60 c-10 0 -25 0 -30 -20 Z" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    </svg>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+/* ================= CONFIGURACIÓN ================= */
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxDe-9KMaNos7YfBJIJCCiBDTM2yFsM2JXM3GxizRQbyFy-VEfuJjJv0nqlVu_I-nY7Gw/exec"; 
+
+/* ================= VARIABLES ================= */
+const DOM = {
+  overlayStart: document.getElementById("overlay-start"),
+  overlayResults: document.getElementById("overlay-results"),
+  startButton: document.getElementById("startButton"),
+  liquid: document.getElementById("liquid"),
+  finalTimeDisplay: document.getElementById("final-time"),
+  finalMessageDisplay: document.getElementById("final-message"),
+  canvas: document.getElementById("confetti-canvas"),
+  gameArea: document.getElementById("gameArea"),
+  nameInput: document.getElementById("playerName")
+};
+
+let playerName = "";
+
+const GameState = {
+  beats: 0,
+  targetBeats: 600, 
+  isGameActive: false,
+  startTime: 0,
+  confettiLauncher: confetti.create(DOM.canvas, { resize: true, useWorker: true })
+};
+
+/* ================= SENSORES ================= */
+function vibrate(p) {
+  if (navigator.vibrate) navigator.vibrate(p);
+}
+
+function handleMotion(event) {
+  if (!GameState.isGameActive) return;
+
+  const a = event.acceleration;
+  const power = Math.abs(a.x||0) + Math.abs(a.y||0) + Math.abs(a.z||0);
+
+  if (power > 20) {
+    GameState.beats++;
+    const pct = Math.min(GameState.beats / GameState.targetBeats * 100, 100);
+    
+    // Subir el líquido
+    DOM.liquid.style.height = `${pct}%`;
+    vibrate(30);
+
+    if (GameState.beats >= GameState.targetBeats) endGame();
+  }
+}
+
+/* ================= FINAL ================= */
+function endGame() {
+  GameState.isGameActive = false;
+  window.removeEventListener("devicemotion", handleMotion);
+  const finalTime = ((Date.now() - GameState.startTime) / 1000).toFixed(2);
+  DOM.finalMessageDisplay.innerText = "¡Completado!";
+  DOM.finalTimeDisplay.innerText = `${finalTime}s`;
+  DOM.overlayResults.classList.remove("hidden");
+  vibrate([200, 100, 200]);
+  launchConfetti();
+  sendToSheet(playerName || "Anónimo", finalTime);
+}
+
+/* ================= GOOGLE SHEETS ================= */
+function sendToSheet(name, time) {
+  if (!WEBHOOK_URL) return;
+  fetch(WEBHOOK_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: name, time: time })
+  }).catch(console.error);
+}
+
+/* ================= CONFETTI ================= */
+function launchConfetti() {
+  const end = Date.now() + 2500;
+  (function frame() {
+    GameState.confettiLauncher({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 } });
+    GameState.confettiLauncher({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 } });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  }());
+}
+
+/* ================= INICIO ================= */
+async function startGame() {
+  const nameInput = DOM.nameInput.value.trim();
+  if (!nameInput) { alert("¡Ingresa tu nombre!"); return; }
+  playerName = nameInput;
+
+  DOM.overlayStart.classList.add("hidden");
+  DOM.gameArea.style.display = "flex";
+
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === "function") {
+    try {
+      const p = await DeviceMotionEvent.requestPermission();
+      if (p !== "granted") { alert("Se requiere permiso de movimiento."); return; }
+    } catch (e) { console.error(e); }
+  }
+
+  GameState.isGameActive = true;
+  GameState.startTime = Date.now();
+  GameState.beats = 0;
+  DOM.liquid.style.height = "0%";
+  window.addEventListener("devicemotion", handleMotion);
+  vibrate(100);
+}
+
+DOM.startButton.addEventListener("click", startGame);
+</script>
+
+</body>
+</html>
