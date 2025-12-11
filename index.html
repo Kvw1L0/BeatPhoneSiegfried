@@ -122,12 +122,9 @@ body {
   
   /* Esto crea una "silueta fantasma" vacía para que el usuario vea qué tiene que llenar */
   background-color: rgba(255, 255, 255, 0.15); 
+  mask-image: url('logo.png');
+
   
-  /* 👇 ⚠️ CAMBIA ESTO POR TU IMAGEN ⚠️ 👇 */
-  /* Ejemplo: mask-image: url('mi-logo-siegfried.png'); */
-  /* He puesto un RAYO SVG por defecto usando DataURI para que funcione ahora mismo */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M273.5 135.4l-75 125h63.3c14.2 0 23.3 16.2 14.8 28.5l-136 192C136 488.5 128 488.2 128 480V320H64.2c-14.7 0-23.4-16.7-14.4-28.8l128-176c4.3-5.9 13.6-2.9 13.6 4.4V256h64V32c0-10.4 12.3-15.9 20.3-8.8l72 64c8.3 7.4 3.7 21.6-7.3 21.6h-58.8l72.4-78.2c8.6-9.3-5.1-23.4-16.3-16.9L166.7 135.4z'/%3E%3Cpath fill='black' d='M112.1 454.3L236.3 280h-64v-96h80l-96-128v80h-64l96 128v-80h64l-124 176c-3.7 5.2-12.4 2.8-12.4-3.7V320H80v-42.7l96-132v98.7h64V128l-80-106.7v96h-64L192 0v117.3H112.1c-14.9 0-23.7 16.9-14.7 29.1zM256 0h-25.6L128 128h64v96h-80l96 128v-80h64l-96-128v80h-64z'/%3E%3Cpath d='M256 0c-14.1 0-25.6 11.5-25.6 25.6v114.3h-96c-10.6 0-20.1 6.6-23.8 16.5s-1.4 21.1 5.9 28.6l160 192c6.6 7.9 16.3 12.5 26.6 12.5s20-4.6 26.6-12.5l160-192c7.3-7.5 9.6-18.7 5.9-28.6s-13.2-16.5-23.8-16.5h-96V25.6C307.2 11.5 295.7 0 281.6 0h-25.6zm0 64h25.6v114.3c0 14.1 11.5 25.6 25.6 25.6h69.5L256 375.7 135.3 230.4h69.5c14.1 0 25.6-11.5 25.6-25.6V64z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512'%3E%3Cpath d='M296 160H180.6l42.6-129.8C227.2 15 215.7 0 200 0H56C42.7 0 32 10.7 32 24c0 11.2 7.7 20.7 18.2 23.2L91.4 160H24c-13.3 0-24 10.7-24 24 0 7.6 3.6 14.3 9.1 18.7L213.1 510.9c9.3 7.3 22.9 1.1 23.4-10.7.2-4.1-1.3-8-4-11L139.4 352H264c13.3 0 24-10.7 24-24 0-7.6-3.6-14.3-9.1-18.7L73.9 160h222.1c13.3 0 24-10.7 24-24s-10.7-24-24-24z'/%3E%3C/svg%3E");
 
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
