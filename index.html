@@ -5,21 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Desafío GALILEA</title>
     <style>
-        /* ================= CONFIGURACIÓN FÁCIL ================= */
+        /* ================= CONFIGURACIÓN ================= */
         :root {
-            /* 1. CONFIGURACIÓN DE LA IMAGEN */
-            /* El código buscará un archivo llamado 'logo.png' en la misma carpeta */
+            /* LA IMAGEN: Asegúrate de que se llame 'logo.png' y esté en la misma carpeta */
             --logo-url: url('logo.png'); 
 
-            /* 2. TAMAÑO DEL LOGO EN PANTALLA */
-            /* Puedes ajustar esto si el logo se ve muy grande o chico */
-            --logo-width: 320px; 
-            --logo-height: 320px; /* Cuadrado para que se adapte a tu logo */
+            /* TAMAÑO: Ajustado a la forma cuadrada de la casita */
+            --container-size: 320px; 
 
-            /* 3. COLORES */
-            --bg-color: #1A1A2E; /* Fondo oscuro */
-            --liquid-color: linear-gradient(to top, #9D2235, #E53935); /* Rojo Corporativo */
-            --empty-color: rgba(255, 255, 255, 0.15); /* Color del logo "vacío" */
+            /* COLORES */
+            --bg-color: #1A1A2E;
+            --brand-color: #E53935; /* Rojo de la marca para botones y textos */
         }
 
         /* ================= ESTILOS BASE ================= */
@@ -36,57 +32,54 @@
             user-select: none;
         }
 
-        /* --- CONTENEDOR PRINCIPAL DEL JUEGO --- */
+        /* --- ÁREA DE JUEGO --- */
+        /* Esta es la "guía" del fondo, la silueta tenue */
         .game-container {
             position: relative;
-            width: var(--logo-width);
-            height: var(--logo-height);
-            display: none; /* Se muestra al iniciar */
+            width: var(--container-size);
+            height: var(--container-size);
+            display: none; /* Se activa con JS */
             
-            /* Animación suave de "respiración" */
+            /* Ponemos la imagen de fondo muy tenue y en escala de grises como guía */
+            background-image: var(--logo-url);
+            background-size: contain;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            filter: grayscale(1) opacity(0.15) brightness(1.5);
+
             animation: breathe 3s infinite alternate ease-in-out;
         }
 
-        /* --- LA MAGIA: MÁSCARA CSS --- 
-           Esto toma tu PNG y le dice al navegador: 
-           "Solo muestra color donde haya píxeles en la imagen" 
-        */
-        .mask-layer {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            
-            /* Fondo grisáceo para que se vea el logo antes de llenarse */
-            background-color: var(--empty-color);
-            
-            /* Aquí aplicamos tu imagen como máscara */
-            -webkit-mask-image: var(--logo-url);
-            mask-image: var(--logo-url);
-            
-            -webkit-mask-size: contain;
-            mask-size: contain;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-position: center;
-            mask-position: center;
-            
-            z-index: 10;
-        }
-
-        /* --- EL LÍQUIDO --- */
-        .liquid {
+        /* --- EL CONTENEDOR QUE "REVELA" --- */
+        /* Este es un cuadro que empieza con altura 0 y va creciendo.
+           Como tiene overflow: hidden, va mostrando lo que tiene dentro poco a poco. */
+        .reveal-box {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 0%; /* JS cambiará esto de 0% a 100% */
-            background: var(--liquid-color);
+            overflow: hidden;
             transition: height 0.1s linear; /* Movimiento fluido */
             
-            /* Importante: mix-blend-mode ayuda a que el color se integre mejor */
-            mix-blend-mode: normal; 
+            /* Importante: quitamos los filtros para que la imagen revelada se vea full color */
+            filter: none;
+            opacity: 1;
         }
+
+        /* --- LA IMAGEN FINAL A COLOR --- */
+        /* Esta imagen está SIEMPRE completa dentro del reveal-box, 
+           pero solo vemos la parte que el reveal-box permite. */
+        .final-image {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--container-size); /* Forzamos la altura para que no se mueva */
+            object-fit: contain;
+            object-position: center bottom;
+        }
+
 
         /* --- PANTALLAS (INICIO / FIN) --- */
         .overlay {
@@ -109,20 +102,21 @@
 
         input {
             padding: 15px; margin-bottom: 20px; font-size: 1.2rem;
-            border-radius: 8px; border: none; width: 80%; max-width: 300px;
-            text-align: center;
+            border-radius: 8px; border: 2px solid #555; background: #222; color: white;
+            width: 80%; max-width: 300px; text-align: center;
         }
+        input:focus { outline: none; border-color: var(--brand-color); }
         
         button {
             padding: 15px 50px; font-size: 1.3rem; font-weight: bold;
-            background: #E53935; color: white;
+            background: var(--brand-color); color: white;
             border: none; border-radius: 50px; cursor: pointer;
             box-shadow: 0 0 20px rgba(229, 57, 53, 0.5);
             transition: transform 0.1s;
         }
         button:active { transform: scale(0.95); }
 
-        .big-text { font-size: 5rem; margin: 0; font-weight: 900; color: #E53935; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .big-text { font-size: 5rem; margin: 0; font-weight: 900; color: var(--brand-color); text-shadow: 0 0 20px rgba(255,255,255,0.2); }
         
         @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.05); } }
         #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
@@ -133,7 +127,7 @@
 
     <div id="screen-start" class="overlay">
         <h1>¡Desafío GALILEA!</h1>
-        <p>Agita tu celular para llenar el logo de energía.</p>
+        <p>Agita tu celular para revelar el mensaje.</p>
         <input type="text" id="player-name" placeholder="Tu Nombre">
         <button onclick="Game.start()">¡JUGAR!</button>
     </div>
@@ -146,9 +140,11 @@
     </div>
 
     <div id="game-container" class="game-container">
-        <div class="mask-layer">
-            <div id="liquid" class="liquid"></div>
+        
+        <div id="reveal-box" class="reveal-box">
+            <img src="logo.png" class="final-image" alt="Logo Galilea">
         </div>
+
     </div>
 
     <canvas id="confetti-canvas"></canvas>
@@ -158,10 +154,20 @@
     <script>
         /* ================= CONFIGURACIÓN TÉCNICA ================= */
         const Config = {
-            // Pon aquí tu URL de Google Apps Script si quieres guardar datos
+            // URL para guardar datos (Opcional)
             webhookUrl: "https://script.google.com/macros/s/AKfycbxDe-9KMaNos7YfBJIJCCiBDTM2yFsM2JXM3GxizRQbyFy-VEfuJjJv0nqlVu_I-nY7Gw/exec", 
-            targetBeats: 400, // Cantidad de agitaciones necesarias (Ajustar dificultad)
-            shakeThreshold: 15 // Sensibilidad del movimiento (Menor = más sensible)
+            targetBeats: 400, // Cantidad de agitaciones para ganar
+            shakeThreshold: 15 // Sensibilidad (Menor = más sensible)
+        };
+
+        /* ================= VARIABLES DEL DOM ================= */
+        const DOM = {
+            screenStart: document.getElementById("screen-start"),
+            screenResult: document.getElementById("screen-result"),
+            gameContainer: document.getElementById("game-container"),
+            revealBox: document.getElementById("reveal-box"), // Referencia al nuevo sistema
+            nameInput: document.getElementById("player-name"),
+            finalTime: document.getElementById("final-time")
         };
 
         /* ================= MOTOR DEL JUEGO ================= */
@@ -172,25 +178,25 @@
             playerName: "",
 
             start: async function() {
-                const nameInput = document.getElementById("player-name").value.trim();
-                if(!nameInput) return alert("Por favor escribe tu nombre 😉");
+                const name = DOM.nameInput.value.trim();
+                if(!name) return alert("Por favor escribe tu nombre 😉");
                 
                 // Solicitar permisos en iPhone (iOS 13+)
                 if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
                     try {
                         const response = await DeviceMotionEvent.requestPermission();
-                        if (response !== 'granted') return alert("Necesitamos acceso al acelerómetro para jugar.");
+                        if (response !== 'granted') return alert("Necesitamos acceso al movimiento para jugar.");
                     } catch (e) { console.error(e); }
                 }
 
-                this.playerName = nameInput;
+                this.playerName = name;
                 this.active = true;
                 this.startTime = Date.now();
                 this.beats = 0;
 
                 // Cambiar pantalla
-                document.getElementById("screen-start").classList.add("hidden");
-                document.getElementById("game-container").style.display = "block";
+                DOM.screenStart.classList.add("hidden");
+                DOM.gameContainer.style.display = "block";
                 
                 // Activar sensores
                 window.addEventListener("devicemotion", (e) => this.handleMotion(e));
@@ -201,44 +207,42 @@
                 if (!this.active) return;
                 
                 const acc = event.acceleration;
-                // Calculamos la fuerza total del movimiento
                 const force = Math.abs(acc.x || 0) + Math.abs(acc.y || 0) + Math.abs(acc.z || 0);
 
                 if (force > Config.shakeThreshold) {
                     this.beats++;
-                    this.updateLiquid();
-                    Utils.vibrate(30); // Vibración suave
+                    this.updateReveal();
+                    Utils.vibrate(30);
 
                     if (this.beats >= Config.targetBeats) this.finish();
                 }
             },
 
-            updateLiquid: function() {
-                // Regla de tres simple para el porcentaje
+            updateReveal: function() {
+                // Calculamos porcentaje y actualizamos la altura de la caja reveladora
                 const percentage = Math.min((this.beats / Config.targetBeats) * 100, 100);
-                document.getElementById("liquid").style.height = `${percentage}%`;
+                DOM.revealBox.style.height = `${percentage}%`;
             },
 
             finish: function() {
                 this.active = false;
                 const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(2);
                 
-                document.getElementById("final-time").innerText = `${totalTime}s`;
-                document.getElementById("screen-result").classList.remove("hidden");
+                DOM.finalTime.innerText = `${totalTime}s`;
+                DOM.screenResult.classList.remove("hidden");
                 
                 Utils.confettiBurst();
-                Utils.vibrate([200, 100, 200]); // Vibración de victoria
+                Utils.vibrate([200, 100, 200]);
                 Network.send(this.playerName, totalTime);
             }
         };
 
-        /* ================= RED Y UTILIDADES ================= */
+        /* ================= UTILIDADES ================= */
         const Network = {
             send: function(name, time) {
                 if(!Config.webhookUrl) return;
                 fetch(Config.webhookUrl, {
-                    method: "POST",
-                    mode: "no-cors",
+                    method: "POST", mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, time })
                 }).catch(err => console.error("Error guardando datos", err));
