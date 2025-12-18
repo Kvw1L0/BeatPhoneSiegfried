@@ -7,56 +7,72 @@
     <style>
         /* ================= CONFIGURACIÓN ================= */
         :root {
-            /* Colores de la marca */
-            --bg-color: #1A1A2E; 
+            /* 1. TAMAÑO DEL LOGO */
+            /* Cambia este valor para agrandar o achicar el logo central */
+            --logo-size: 320px; 
+
+            /* 2. IMAGEN DE FONDO */
+            /* Asegúrate de tener este archivo en la carpeta */
+            --bg-image: url('fondo.jpg'); 
+
+            /* 3. COLORES */
             --brand-color: #E53935; /* Rojo */
-            
-            /* Ajusta esto según el tamaño de tu logo en pantalla */
-            --logo-size: 300px;
         }
 
         body {
             margin: 0;
-            background-color: var(--bg-color);
-            
-            color: white;
             font-family: system-ui, -apple-system, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            width: 100vw;
             overflow: hidden;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+
+            /* CONFIGURACIÓN DEL FONDO DE PANTALLA */
+            background-color: #1A1A2E; /* Color de respaldo si falla la imagen */
+            background-image: var(--bg-image);
+            background-size: cover;      /* Cubre toda la pantalla */
+            background-position: center; /* Centrado */
+            background-repeat: no-repeat;
+        }
+
+        /* Capa oscura sobre el fondo para que el logo resalte (Opcional) */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5); /* Oscurece el fondo un 50% */
+            z-index: 0;
         }
 
         /* --- CONTENEDOR DEL LOGO --- */
         .logo-wrapper {
             position: relative;
+            /* AQUÍ SE APLICA EL TAMAÑO CONFIGURADO ARRIBA */
             width: var(--logo-size);
             height: var(--logo-size);
             display: none; /* Se activa con JS */
+            z-index: 10;   /* Por encima del fondo */
             
-            /* Animación de respiración */
             animation: breathe 3s infinite alternate ease-in-out;
         }
 
         /* --- LAS IMÁGENES --- */
-        /* Usamos la misma clase para ambas para que sean IDÉNTICAS en tamaño y posición */
         .logo-img {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Asegura que la imagen no se deforme */
-            pointer-events: none; /* Para que los clics pasen al contenedor */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: contain;
+            pointer-events: none;
         }
 
         /* 1. La imagen "Fantasma" (Fondo) */
         .ghost {
-            opacity: 0.2;     /* Muy transparente */
-            filter: grayscale(1); /* Blanco y negro */
+            opacity: 0.3; /* Un poco más visible para guiar */
+            filter: grayscale(1) brightness(2); /* Blanco y negro brillante */
             z-index: 1;
         }
 
@@ -64,11 +80,9 @@
         .full-color {
             z-index: 2;
             opacity: 1;
-            filter: none; /* Color original */
+            filter: drop-shadow(0 0 15px rgba(229, 57, 53, 0.5)); /* Glow rojo */
             
-            /* AQUÍ ESTÁ EL TRUCO: Clip-path */
-            /* inset(ARRIBA DERECHA ABAJO IZQUIERDA) */
-            /* Empezamos recortando 100% desde arriba (invisible) */
+            /* Recorte inicial (100% oculto desde arriba) */
             clip-path: inset(100% 0 0 0);
             -webkit-clip-path: inset(100% 0 0 0);
             
@@ -78,7 +92,8 @@
         /* --- INTERFAZ --- */
         .overlay {
             position: fixed; inset: 0;
-            background: rgba(26, 26, 46, 0.98);
+            background: rgba(20, 20, 35, 0.95); /* Fondo casi sólido para menús */
+            backdrop-filter: blur(10px);
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             text-align: center; z-index: 100;
@@ -86,8 +101,8 @@
         }
         .hidden { opacity: 0; pointer-events: none; }
         
-        h1 { margin-bottom: 10px; font-size: 2rem; color: #fff; }
-        p { color: #ccc; margin-bottom: 30px; font-size: 1.1rem; }
+        h1 { margin-bottom: 10px; font-size: 2rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        p { color: #ddd; margin-bottom: 30px; font-size: 1.1rem; }
         
         input {
             padding: 15px; margin-bottom: 20px; font-size: 1.2rem;
@@ -104,14 +119,24 @@
         }
         button:active { transform: scale(0.95); }
         
-        .big-text { font-size: 5rem; margin: 0; font-weight: 900; color: var(--brand-color); }
+        .big-text { font-size: 5rem; margin: 0; font-weight: 900; color: var(--brand-color); text-shadow: 2px 2px 0px white; }
 
         @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.05); } }
-        #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
         
-        /* Debug helper */
+        /* FIX CONFETTI: Asegura que cubra toda la pantalla */
+        #confetti-canvas { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            pointer-events: none; 
+            z-index: 200; 
+        }
+        
         .tap-hint {
-            position: absolute; bottom: 20px; font-size: 0.8rem; opacity: 0.5;
+            position: absolute; bottom: 30px; 
+            color: rgba(255,255,255,0.6); font-size: 0.9rem; 
+            z-index: 20; text-shadow: 0 1px 2px black;
         }
     </style>
 </head>
@@ -133,14 +158,11 @@
     </div>
 
     <div id="game-container" class="logo-wrapper" onclick="Game.simulateShake()">
-        
         <img src="logo.png" class="logo-img ghost" alt="Logo Fondo">
-        
         <img src="logo.png" id="full-image" class="logo-img full-color" alt="Logo Color">
-        
     </div>
 
-    <p class="tap-hint" id="hint-text" style="display:none">Si no carga al agitar, toca la imagen repetidamente.</p>
+    <p class="tap-hint" id="hint-text" style="display:none">Agita fuerte o toca la pantalla</p>
 
     <canvas id="confetti-canvas"></canvas>
 
@@ -149,8 +171,8 @@
     <script>
         const Config = {
             webhookUrl: "https://script.google.com/macros/s/AKfycbxDe-9KMaNos7YfBJIJCCiBDTM2yFsM2JXM3GxizRQbyFy-VEfuJjJv0nqlVu_I-nY7Gw/exec", 
-            targetBeats: 400, // Número de "sacudidas" necesarias
-            shakeThreshold: 15 // Sensibilidad
+            targetBeats: 400, // Dificultad (agitar más o menos veces)
+            shakeThreshold: 15 
         };
 
         const Game = {
@@ -163,11 +185,11 @@
                 const name = document.getElementById("player-name").value.trim();
                 if(!name) return alert("Por favor escribe tu nombre 😉");
                 
-                // Pedir permisos en iOS 13+
+                // Permisos iOS
                 if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
                     try {
                         const response = await DeviceMotionEvent.requestPermission();
-                        if (response !== 'granted') alert("Necesitas dar permiso para jugar agitando.");
+                        if (response !== 'granted') alert("Permiso denegado. Toca la pantalla para jugar.");
                     } catch (e) { console.error(e); }
                 }
 
@@ -176,61 +198,41 @@
                 this.startTime = Date.now();
                 this.beats = 0;
 
-                // UI Reset
                 document.getElementById("screen-start").classList.add("hidden");
                 document.getElementById("game-container").style.display = "block";
                 document.getElementById("hint-text").style.display = "block";
                 
-                // Aseguramos que empiece oculto (100% recortado desde arriba)
                 this.updateVisuals(0);
 
-                // Listeners
                 window.addEventListener("devicemotion", (e) => this.handleMotion(e));
-                
-                // Vibración inicial
                 if(navigator.vibrate) navigator.vibrate(100);
             },
 
             handleMotion: function(event) {
                 if (!this.active) return;
-                
                 const acc = event.acceleration;
                 const force = Math.abs(acc.x || 0) + Math.abs(acc.y || 0) + Math.abs(acc.z || 0);
-
-                if (force > Config.shakeThreshold) {
-                    this.addBeat();
-                }
+                if (force > Config.shakeThreshold) this.addBeat();
             },
 
-            // Función para probar con click (DEBUG)
             simulateShake: function() {
                 if (!this.active) return;
-                // Sumamos 5 beats por click para probar rápido
                 for(let i=0; i<5; i++) this.addBeat(); 
             },
 
             addBeat: function() {
                 this.beats++;
                 const percentage = Math.min((this.beats / Config.targetBeats) * 100, 100);
-                
                 this.updateVisuals(percentage);
-                
-                if(this.beats % 5 === 0 && navigator.vibrate) navigator.vibrate(20); // Vibrar suave cada 5 beats
-
+                if(this.beats % 10 === 0 && navigator.vibrate) navigator.vibrate(20);
                 if (this.beats >= Config.targetBeats) this.finish();
             },
 
             updateVisuals: function(percentage) {
-                const fullImage = document.getElementById("full-image");
-                
-                // Lógica de Clip-Path:
-                // inset(top right bottom left)
-                // Si porcentaje es 0% -> top debe ser 100% (oculto)
-                // Si porcentaje es 100% -> top debe ser 0% (visible)
                 const clipValue = 100 - percentage;
-                
-                fullImage.style.clipPath = `inset(${clipValue}% 0 0 0)`;
-                fullImage.style.webkitClipPath = `inset(${clipValue}% 0 0 0)`;
+                const img = document.getElementById("full-image");
+                img.style.clipPath = `inset(${clipValue}% 0 0 0)`;
+                img.style.webkitClipPath = `inset(${clipValue}% 0 0 0)`;
             },
 
             finish: function() {
@@ -242,7 +244,9 @@
                 document.getElementById("screen-result").classList.remove("hidden");
                 document.getElementById("hint-text").style.display = "none";
                 
-                this.launchConfetti();
+                // LANZAR CONFETTI ARREGLADO
+                this.launchRainConfetti();
+                
                 if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
                 this.sendData(totalTime);
             },
@@ -256,17 +260,31 @@
                 }).catch(console.error);
             },
 
-            launchConfetti: function() {
+            // EFECTO LLUVIA DE CONFETTI (MEJORADO)
+            launchRainConfetti: function() {
                 const canvas = document.getElementById('confetti-canvas');
                 const myConfetti = confetti.create(canvas, { resize: true });
-                const end = Date.now() + 2500;
+                const duration = 3000;
+                const end = Date.now() + duration;
+
                 (function frame() {
-                    myConfetti({ particleCount: 5, spread: 60, origin: { x: 0 }, colors: ['#E53935', '#ffffff'] });
-                    myConfetti({ particleCount: 5, spread: 60, origin: { x: 1 }, colors: ['#E53935', '#ffffff'] });
-                    if (Date.now() < end) requestAnimationFrame(frame);
+                    // Lanza confetti desde posiciones aleatorias arriba
+                    myConfetti({
+                        particleCount: 5,
+                        angle: 270, // Hacia abajo
+                        spread: 180, // Expansión total
+                        origin: { x: Math.random(), y: -0.1 }, // Desde cualquier punto X, arriba de la pantalla (Y < 0)
+                        colors: ['#E53935', '#ffffff', '#FFD700'], // Rojo, Blanco, Dorado
+                        scalar: 1.2 // Un poco más grandes
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
                 }());
             }
         };
     </script>
 </body>
 </html>
+
