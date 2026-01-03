@@ -7,7 +7,7 @@
     <style>
         /* ================= CONFIGURACIÓN VISUAL ================= */
         :root {
-            --logo-size: 350px; /* Tamaño ajustado para celulares */
+            --logo-size: 500px; /* Tamaño ajustado para celulares */
             --bg-image: url('fondo.jpg'); 
             --brand-color: #E53935;
         }
@@ -33,7 +33,7 @@
         body::before {
             content: '';
             position: absolute; inset: 0;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.1);
             z-index: 0;
         }
 
@@ -129,10 +129,10 @@
 
     <div id="screen-start" class="overlay">
         <h1>¡BATIPHONE!</h1>
-        <p>Introduce tu nombre para comenzar la misión.</p>
+        <p>Escribe tu nombre y espera las instrucciones.</p>
         <input type="text" id="player-name" placeholder="Tu Nombre">
         <button onclick="Game.start()">¡JUGAR!</button>
-        <p style="font-size: 0.8rem; margin-top: 20px; opacity: 0.6;">(Requiere permisos de movimiento)</p>
+        
     </div>
 
     <div id="screen-result" class="overlay hidden">
@@ -157,7 +157,7 @@
         const Config = {
             // URL de Google Apps Script (Webhook)
             webhookUrl: "https://script.google.com/macros/s/AKfycbxDe-9KMaNos7YfBJIJCCiBDTM2yFsM2JXM3GxizRQbyFy-VEfuJjJv0nqlVu_I-nY7Gw/exec", 
-            targetBeats: 60,   // Meta de puntos para ganar
+            targetBeats: 100,   // Meta de puntos para ganar
             shakeThreshold: 25 // Sensibilidad (Menos es más sensible, Más es más duro)
         };
 
