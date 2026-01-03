@@ -2,21 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>¡ BATIPHONE !</title>
     <style>
-        /* ================= CONFIGURACIÓN ================= */
+        /* ================= CONFIGURACIÓN VISUAL ================= */
         :root {
-            /* 1. TAMAÑO DEL LOGO */
-            /* Cambia este valor para agrandar o achicar el logo central */
-            --logo-size: 600px; 
-
-            /* 2. IMAGEN DE FONDO */
-            /* Asegúrate de tener este archivo en la carpeta */
+            --logo-size: 350px; /* Tamaño ajustado para celulares */
             --bg-image: url('fondo.jpg'); 
-
-            /* 3. COLORES */
-            --brand-color: #E53935; /* Rojo */
+            --brand-color: #E53935;
         }
 
         body {
@@ -30,37 +23,30 @@
             overflow: hidden;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-
-            /* CONFIGURACIÓN DEL FONDO DE PANTALLA */
-            background-color: #1A1A2E; /* Color de respaldo si falla la imagen */
+            background-color: #1A1A2E;
             background-image: var(--bg-image);
-            background-size: cover;      /* Cubre toda la pantalla */
-            background-position: center; /* Centrado */
+            background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
         }
 
-        /* Capa oscura sobre el fondo para que el logo resalte (Opcional) */
         body::before {
             content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5); /* Oscurece el fondo un 50% */
+            position: absolute; inset: 0;
+            background: rgba(0, 0, 0, 0.6);
             z-index: 0;
         }
 
         /* --- CONTENEDOR DEL LOGO --- */
         .logo-wrapper {
             position: relative;
-            /* AQUÍ SE APLICA EL TAMAÑO CONFIGURADO ARRIBA */
             width: var(--logo-size);
             height: var(--logo-size);
             display: none; /* Se activa con JS */
-            z-index: 10;   /* Por encima del fondo */
-            
+            z-index: 10;
             animation: breathe 3s infinite alternate ease-in-out;
         }
 
-        /* --- LAS IMÁGENES --- */
         .logo-img {
             position: absolute;
             top: 0; left: 0;
@@ -69,31 +55,27 @@
             pointer-events: none;
         }
 
-        /* 1. La imagen "Fantasma" (Fondo) */
         .ghost {
-            opacity: 0.3; /* Un poco más visible para guiar */
-            filter: grayscale(1) brightness(2); /* Blanco y negro brillante */
+            opacity: 0.3;
+            filter: grayscale(1) brightness(2);
             z-index: 1;
         }
 
-        /* 2. La imagen "Real" (Frente) */
         .full-color {
             z-index: 2;
             opacity: 1;
-            filter: drop-shadow(0 0 15px rgba(229, 57, 53, 0.5)); /* Glow rojo */
-            
-            /* Recorte inicial (100% oculto desde arriba) */
+            filter: drop-shadow(0 0 15px rgba(229, 57, 53, 0.6));
+            /* Recorte inicial (100% oculto) */
             clip-path: inset(100% 0 0 0);
             -webkit-clip-path: inset(100% 0 0 0);
-            
             transition: clip-path 0.1s linear, -webkit-clip-path 0.1s linear;
         }
 
         /* --- INTERFAZ --- */
         .overlay {
             position: fixed; inset: 0;
-            background: rgba(20, 20, 35, 0.3); /* Fondo casi sólido para menús */
-            backdrop-filter: blur(10px);
+            background: rgba(20, 20, 35, 0.85);
+            backdrop-filter: blur(8px);
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             text-align: center; z-index: 100;
@@ -101,14 +83,15 @@
         }
         .hidden { opacity: 0; pointer-events: none; }
         
-        h1 { margin-bottom: 10px; font-size: 2rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        p { color: #ddd; margin-bottom: 30px; font-size: 1.1rem; }
+        h1 { margin-bottom: 10px; font-size: 2.5rem; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-top: 0;}
+        p { color: #ddd; margin-bottom: 30px; font-size: 1.1rem; line-height: 1.5; }
         
         input {
-            padding: 15px; margin-bottom: 20px; font-size: 1.2rem;
-            border-radius: 8px; border: 2px solid #555; background: #222; color: white;
-            width: 80%; max-width: 300px; text-align: center;
+            padding: 15px; margin-bottom: 25px; font-size: 1.2rem;
+            border-radius: 12px; border: 2px solid #555; background: #222; color: white;
+            width: 80%; max-width: 300px; text-align: center; outline: none;
         }
+        input:focus { border-color: var(--brand-color); }
         
         button {
             padding: 15px 50px; font-size: 1.3rem; font-weight: bold;
@@ -123,21 +106,22 @@
 
         @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.05); } }
         
-        /* FIX CONFETTI: Asegura que cubra toda la pantalla */
         #confetti-canvas { 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            pointer-events: none; 
-            z-index: 200; 
+            position: fixed; top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            pointer-events: none; z-index: 200; 
         }
         
         .tap-hint {
-            position: absolute; bottom: 30px; 
-            color: rgba(255,255,255,0.6); font-size: 0.9rem; 
-            z-index: 20; text-shadow: 0 1px 2px black;
+            position: absolute; bottom: 50px; left: 0; right: 0;
+            text-align: center;
+            color: rgba(255,255,255,0.8); font-size: 1.2rem; font-weight: bold;
+            z-index: 20; text-shadow: 0 2px 4px black;
+            display: none; /* Se activa al jugar */
+            animation: pulse 1s infinite;
         }
+
+        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 
@@ -145,33 +129,36 @@
 
     <div id="screen-start" class="overlay">
         <h1>¡BATIPHONE!</h1>
-        <p>Escribe tu nombre y espera las instrucciones.</p>
+        <p>Introduce tu nombre para comenzar la misión.</p>
         <input type="text" id="player-name" placeholder="Tu Nombre">
         <button onclick="Game.start()">¡JUGAR!</button>
+        <p style="font-size: 0.8rem; margin-top: 20px; opacity: 0.6;">(Requiere permisos de movimiento)</p>
     </div>
 
     <div id="screen-result" class="overlay hidden">
-        <h1>¡Completado!</h1>
-        <p>Tu tiempo fue:</p>
+        <h1>¡Misión Cumplida!</h1>
+        <p>Tiempo total:</p>
         <p class="big-text" id="final-time">0.00s</p>
         <button onclick="location.reload()">Jugar de nuevo</button>
     </div>
 
     <div id="game-container" class="logo-wrapper" onclick="Game.simulateShake()">
-        <img src="logo.png" class="logo-img ghost" alt="Logo Fondo">
+        <img src="logo.png" class="logo-img ghost" alt="Logo Ghost">
         <img src="logo.png" id="full-image" class="logo-img full-color" alt="Logo Color">
     </div>
 
-    
+    <p id="hint-text" class="tap-hint">¡AGITA RÁPIDO EL TELÉFONO!</p>
+
     <canvas id="confetti-canvas"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script>
         const Config = {
+            // URL de Google Apps Script (Webhook)
             webhookUrl: "https://script.google.com/macros/s/AKfycbxDe-9KMaNos7YfBJIJCCiBDTM2yFsM2JXM3GxizRQbyFy-VEfuJjJv0nqlVu_I-nY7Gw/exec", 
-            targetBeats: 100, // Dificultad (agitar más o menos veces)
-            shakeThreshold: 15 
+            targetBeats: 60,   // Meta de puntos para ganar
+            shakeThreshold: 25 // Sensibilidad (Menos es más sensible, Más es más duro)
         };
 
         const Game = {
@@ -179,16 +166,26 @@
             beats: 0,
             startTime: 0,
             playerName: "",
+            
+            // Variables para calcular la diferencia de movimiento (Delta)
+            lastX: 0, lastY: 0, lastZ: 0,
 
             start: async function() {
-                const name = document.getElementById("player-name").value.trim();
-                if(!name) return alert("Por favor escribe tu nombre 😉");
+                const nameInpt = document.getElementById("player-name");
+                const name = nameInpt.value.trim();
                 
-                // Permisos iOS
+                if(!name) {
+                    nameInpt.style.borderColor = "red";
+                    return alert("¡Necesitamos tu nombre, agente!");
+                }
+                
+                // === SOLICITUD DE PERMISOS (iOS 13+) ===
                 if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
                     try {
                         const response = await DeviceMotionEvent.requestPermission();
-                        if (response !== 'granted') alert("Permiso denegado. Toca la pantalla para jugar.");
+                        if (response !== 'granted') {
+                            alert("Permiso denegado. Tendrás que tocar la pantalla repetidamente.");
+                        }
                     } catch (e) { console.error(e); }
                 }
 
@@ -196,57 +193,106 @@
                 this.active = true;
                 this.startTime = Date.now();
                 this.beats = 0;
+                
+                // Reiniciar posiciones
+                this.lastX = 0; this.lastY = 0; this.lastZ = 0;
 
+                // Cambiar pantallas
                 document.getElementById("screen-start").classList.add("hidden");
                 document.getElementById("game-container").style.display = "block";
                 document.getElementById("hint-text").style.display = "block";
                 
                 this.updateVisuals(0);
 
+                // Escuchar movimiento
                 window.addEventListener("devicemotion", (e) => this.handleMotion(e));
+                
+                // Feedback inicial
                 if(navigator.vibrate) navigator.vibrate(100);
             },
 
             handleMotion: function(event) {
                 if (!this.active) return;
-                const acc = event.acceleration;
-                const force = Math.abs(acc.x || 0) + Math.abs(acc.y || 0) + Math.abs(acc.z || 0);
-                if (force > Config.shakeThreshold) this.addBeat();
+
+                // 1. Obtener aceleración con gravedad (Más compatible en Android/Web)
+                let acc = event.accelerationIncludingGravity;
+                if (!acc) acc = event.acceleration; // Fallback
+                if (!acc) return;
+
+                const x = acc.x || 0;
+                const y = acc.y || 0;
+                const z = acc.z || 0;
+
+                // 2. Calcular cuánto se movió respecto al frame anterior (Delta)
+                const deltaX = Math.abs(x - this.lastX);
+                const deltaY = Math.abs(y - this.lastY);
+                const deltaZ = Math.abs(z - this.lastZ);
+
+                // Suma total de velocidad de cambio
+                const speed = deltaX + deltaY + deltaZ;
+
+                // 3. Verificar si supera el umbral
+                if (speed > Config.shakeThreshold) {
+                    this.addBeat();
+                }
+
+                // Guardar posición actual
+                this.lastX = x;
+                this.lastY = y;
+                this.lastZ = z;
             },
 
             simulateShake: function() {
+                // Permite avanzar tocando la pantalla (Backup manual)
                 if (!this.active) return;
-                for(let i=0; i<5; i++) this.addBeat(); 
+                for(let i=0; i<3; i++) this.addBeat(); 
             },
 
             addBeat: function() {
                 this.beats++;
+                
+                // Calcular porcentaje (0 a 100)
                 const percentage = Math.min((this.beats / Config.targetBeats) * 100, 100);
                 this.updateVisuals(percentage);
+
+                // Vibración leve cada 10 puntos para no saturar
                 if(this.beats % 10 === 0 && navigator.vibrate) navigator.vibrate(20);
-                if (this.beats >= Config.targetBeats) this.finish();
+
+                // ¿Ganó?
+                if (this.beats >= Config.targetBeats) {
+                    this.finish();
+                }
             },
 
             updateVisuals: function(percentage) {
                 const clipValue = 100 - percentage;
                 const img = document.getElementById("full-image");
-                img.style.clipPath = `inset(${clipValue}% 0 0 0)`;
-                img.style.webkitClipPath = `inset(${clipValue}% 0 0 0)`;
+                if(img) {
+                    // Revela la imagen de abajo hacia arriba
+                    img.style.clipPath = `inset(${clipValue}% 0 0 0)`;
+                    img.style.webkitClipPath = `inset(${clipValue}% 0 0 0)`;
+                }
             },
 
             finish: function() {
                 if (!this.active) return;
                 this.active = false;
+                
+                // Detener escucha de sensores
+                window.removeEventListener("devicemotion", (e) => this.handleMotion(e));
+
                 const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(2);
                 
+                // Mostrar resultados
                 document.getElementById("final-time").innerText = `${totalTime}s`;
                 document.getElementById("screen-result").classList.remove("hidden");
                 document.getElementById("hint-text").style.display = "none";
                 
-                // LANZAR CONFETTI ARREGLADO
+                // Efectos
                 this.launchRainConfetti();
-                
                 if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                
+                // Guardar datos
                 this.sendData(totalTime);
             },
 
@@ -259,22 +305,21 @@
                 }).catch(console.error);
             },
 
-            // EFECTO LLUVIA DE CONFETTI (MEJORADO)
             launchRainConfetti: function() {
                 const canvas = document.getElementById('confetti-canvas');
+                if(!canvas) return;
                 const myConfetti = confetti.create(canvas, { resize: true });
                 const duration = 3000;
                 const end = Date.now() + duration;
 
                 (function frame() {
-                    // Lanza confetti desde posiciones aleatorias arriba
                     myConfetti({
                         particleCount: 5,
-                        angle: 270, // Hacia abajo
-                        spread: 180, // Expansión total
-                        origin: { x: Math.random(), y: -0.1 }, // Desde cualquier punto X, arriba de la pantalla (Y < 0)
-                        colors: ['#E53935', '#ffffff', '#FFD700'], // Rojo, Blanco, Dorado
-                        scalar: 1.2 // Un poco más grandes
+                        angle: 270,
+                        spread: 180,
+                        origin: { x: Math.random(), y: -0.1 },
+                        colors: ['#E53935', '#ffffff', '#FFD700'],
+                        scalar: 1.2
                     });
 
                     if (Date.now() < end) {
@@ -286,4 +331,3 @@
     </script>
 </body>
 </html>
-
